@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { BaseApiClient } from './api-client.base';
+import { HideoutMetadata } from '../../models/HideoutMetadata';
 
 export interface LoadHideoutsOptions {
   page: number;
@@ -11,6 +12,6 @@ export interface LoadHideoutsOptions {
 })
 export class ApiClient extends BaseApiClient {
   getHideoutList(opts: LoadHideoutsOptions) {
-    return this.requestAPI('/hideout/list', { params: { page: opts.page } });
+    return this.requestAPI<HideoutMetadata[]>('/hideout/list', { params: { page: opts.page } });
   }
 }

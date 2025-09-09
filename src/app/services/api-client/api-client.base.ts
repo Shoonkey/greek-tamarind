@@ -4,17 +4,17 @@ import { ApiErrorCode } from '../../i18n/api.errors';
 type CommonHttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 type RequestData = Record<string, any>;
 
-interface OkApiResponse {
+interface OkApiResponse<T> {
   ok: true;
-  data: any;
+  data: T;
 }
 
 interface OopsApiResponse {
   ok: false;
-  errorCode: string;
+  errorCode: ApiErrorCode;
 }
 
-type ApiClientResponse = OkApiResponse | OopsApiResponse;
+type ApiClientResponse<T> = OkApiResponse<T> | OopsApiResponse;
 
 interface RequestConfig {
   params?: RequestData;
@@ -26,21 +26,21 @@ export abstract class BaseApiClient {
   private apiURL = environment.apiURL;
   private unexpectedErrorCode: ApiErrorCode = 'UNEXPECTED_ERROR';
 
-  private Ok(data: any): OkApiResponse {
+  private Ok<T>(data: T): OkApiResponse<T> {
     return { ok: true, data };
   }
 
   private Oops(errorCode?: string): OopsApiResponse {
     return {
       ok: false,
-      errorCode: errorCode || this.unexpectedErrorCode,
+      errorCode: (errorCode as ApiErrorCode) || this.unexpectedErrorCode,
     };
   }
 
-  protected async requestAPI(
+  protected async requestAPI<T>(
     endpoint: string,
     config: RequestConfig = {},
-  ): Promise<ApiClientResponse> {
+  ): Promise<ApiClientResponse<T>> {
     const { method, params, body } = config;
 
     let url = `${this.apiURL}/${endpoint}`;

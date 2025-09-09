@@ -1,2 +1,21 @@
-<p>i'm gonna list hideouts!</p>
-<code>{{ hideouts() }}</code>
+@let _error = error();
+@let _loading = loading();
+@let _hideouts = hideouts();
+
+@if (_loading) {
+  <p>Loading...</p>
+} @else if (_error) {
+  <p class="error">{{ _error }}</p>
+} @else if (!_hideouts) {
+  <p>No hideouts available</p>
+} @else {
+  <div class="hideout-list-container">
+    <app-pagination-control [currentPage]="1" [totalPages]="4" (pageChange)="updatePage($event)" />
+    <ul class="hideout-list">
+      @for (hideout of hideouts(); track $index) {
+        <li><app-hideout-card [hideout]="hideout" /></li>
+      }
+    </ul>
+    <app-pagination-control [currentPage]="1" [totalPages]="4" (pageChange)="updatePage($event)" />
+  </div>
+}

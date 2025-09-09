@@ -1,0 +1,45 @@
+:host {
+  display: contents;
+}
+
+.pagination-control {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.page-container {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  button {
+    display: block;
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: inherit;
+    font-family: inherit;
+    cursor: pointer;
+    width: 1ch;
+
+    &:hover {
+      color: var(--light-highlight-color);
+    }
+  }
+
+  input {
+    width: 4ch;
+    height: 1.25rem;
+  }
+
+  .confirm-btn {
+    --height: 1.75rem;
+
+    position: absolute;
+    left: 50%;
+    top: calc(50% + var(--height));
+    transform: translate(-50%, -50%);
+  }
+}

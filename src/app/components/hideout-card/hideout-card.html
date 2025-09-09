@@ -1,0 +1,14 @@
+@let _hideout = hideout();
+<div class="hideout-card">
+  <a [routerLink]="`/hideout/${_hideout.guid}`">
+    <img [src]="_hideout.imgUrl" [alt]="_hideout.imgAlt" />
+  </a>
+  <div class="info-container">
+    <p>{{ _hideout.map }}</p>
+    <div class="short-info-group">
+      <p>POE {{ _hideout.poeVersion }}</p>
+      <p>{{ _hideout.rating }}/5</p>
+      <p>MTX: {{ _hideout.hasMTX ? 'Yes' : 'No' }}</p>
+    </div>
+  </div>
+</div>

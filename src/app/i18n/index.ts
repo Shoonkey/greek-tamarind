@@ -1,5 +1,8 @@
-import { I18NDict, SupportedLanguage } from './i18n-dict.type';
+import { API_ERRORS, ApiErrorCode } from './api.errors';
+import { SupportedLanguage } from './i18n-dict.type';
 
-export function i18n<T extends string>(lang: SupportedLanguage, tag: T, dict: I18NDict<T>): string {
-  return dict[lang][tag];
+// TODO: Create generalized solution for all i18n dictionaries
+
+export function i18nApi(lang: SupportedLanguage, tag: ApiErrorCode): string {
+  return API_ERRORS[lang][tag];
 }
