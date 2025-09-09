@@ -1,0 +1,31 @@
+<nav>
+  <section>
+    <!-- TODO: <app-logo /> -->
+  </section>
+  <section class="user-action">
+    <app-button>
+      <app-icon name="stack" title="Your uploaded hideouts" />
+    </app-button>
+    <app-button title="Upload hideout">
+      <app-icon name="file-arrow-up" />
+    </app-button>
+    <div class="user-profile">
+      @let dropdownId = 'user-dropdown';
+      <app-button
+        title="Profile"
+        aria-label="User options menu"
+        [attr.aria-expanded]="isDropdownOpen()"
+        [attr.aria-controls]="dropdownId"
+        (click)="toggleDropdown()"
+      >
+        <app-icon name="user-circle" size="md" />
+      </app-button>
+      <ul [id]="dropdownId" [class.open]="isDropdownOpen()">
+        <!-- <li><a>Change theme</a></li> -->
+        <!-- TODO: Allow changing theme -->
+        <li><a routerLink="/account">Account</a></li>
+        <li><app-button>Log out</app-button></li>
+      </ul>
+    </div>
+  </section>
+</nav>

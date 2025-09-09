@@ -1,0 +1,43 @@
+:host {
+  display: contents;
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+
+  background: black;
+  padding: 0.5rem 1rem;
+}
+
+.user-action {
+  display: inherit;
+}
+
+.user-profile {
+  position: relative;
+}
+
+#user-dropdown {
+  display: none;
+  position: absolute;
+  top: 70px;
+  right: 0px;
+  border-radius: 1rem;
+
+  background: black;
+  list-style-type: none;
+  font-size: 0.8rem;
+  padding: 1em 1.5em;
+  min-width: 100px;
+  text-align: right;
+
+  &.open {
+    display: block;
+  }
+
+  a {
+    text-decoration: none;
+    padding: 0.5em;
+  }
+}

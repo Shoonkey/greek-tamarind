@@ -1,0 +1,347 @@
+{
+  "uuid": "1512cf3f-c5f1-4948-9cf1-a1bfb991c3de",
+  "lastMigration": 33,
+  "name": "PoE hideout thingie",
+  "endpointPrefix": "",
+  "latency": 0,
+  "port": 3001,
+  "hostname": "",
+  "folders": [],
+  "routes": [
+    {
+      "uuid": "6867683c-4056-4fc5-8b04-d86b2cd39d7b",
+      "type": "http",
+      "documentation": "Gets list of hideouts",
+      "method": "get",
+      "endpoint": "hideout/list",
+      "responses": [
+        {
+          "uuid": "c7b9b5f6-316e-43c0-969e-3efb853c7350",
+          "body": "{}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "DATABUCKET",
+          "filePath": "",
+          "databucketID": "kakh",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "792a7eec-531c-4848-861c-bf897ed1abb2",
+      "type": "http",
+      "documentation": "Gets specific hideout",
+      "method": "get",
+      "endpoint": "hideout/:id",
+      "responses": [
+        {
+          "uuid": "c49a66c1-ccc4-4c5e-8a3b-497189510d62",
+          "body": "{{ data 'Hideouts' 0 }}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "56cc1eb4-76aa-4bb5-8848-1ce32140a1fc",
+      "type": "http",
+      "documentation": "Returns an auth token for the user to log in",
+      "method": "post",
+      "endpoint": "auth/login",
+      "responses": [
+        {
+          "uuid": "1d5b87a4-7038-417d-a0b6-d4a45469158e",
+          "body": "{}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "a174a68a-0c1d-4bc1-bbbc-e18c2a909208",
+      "type": "http",
+      "documentation": "Registers a new user",
+      "method": "post",
+      "endpoint": "auth/signup",
+      "responses": [
+        {
+          "uuid": "763d0f5f-9827-49d3-9204-ce16e160515b",
+          "body": "{}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "c55b255f-c843-497c-a34e-7e30abd95b3c",
+      "type": "http",
+      "documentation": "Checks if the 2FA code matches",
+      "method": "post",
+      "endpoint": "auth/2fa-check",
+      "responses": [
+        {
+          "uuid": "12a14e12-aaa0-45aa-9da3-28e6353d4730",
+          "body": "{}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "39fa37e4-33ef-4779-b383-87caebd38520",
+      "type": "http",
+      "documentation": "Retrieves data of a specific user",
+      "method": "get",
+      "endpoint": "user/:username",
+      "responses": [
+        {
+          "uuid": "3ecb77ac-c982-43c0-854f-148cd657f773",
+          "body": "{}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "2356352e-ca4e-4d94-87e4-0d838059fc19",
+      "type": "http",
+      "documentation": "Updates specific fields of a user (e.g. username, settings, activeness)",
+      "method": "patch",
+      "endpoint": "user/:username",
+      "responses": [
+        {
+          "uuid": "a3a653e3-aa7d-4aeb-b5ee-7bbfebb5a115",
+          "body": "{}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "676dd9e0-27db-463b-aa72-232c10f39894",
+      "type": "http",
+      "documentation": "Uploads a hideout, either creating a brand new one or updating an existing one's history/changelog",
+      "method": "post",
+      "endpoint": "hideout/upload",
+      "responses": [
+        {
+          "uuid": "9fb5b140-20c8-4fae-b2e8-27db89ded667",
+          "body": "",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    }
+  ],
+  "rootChildren": [
+    {
+      "type": "route",
+      "uuid": "6867683c-4056-4fc5-8b04-d86b2cd39d7b"
+    },
+    {
+      "type": "route",
+      "uuid": "792a7eec-531c-4848-861c-bf897ed1abb2"
+    },
+    {
+      "type": "route",
+      "uuid": "676dd9e0-27db-463b-aa72-232c10f39894"
+    },
+    {
+      "type": "route",
+      "uuid": "56cc1eb4-76aa-4bb5-8848-1ce32140a1fc"
+    },
+    {
+      "type": "route",
+      "uuid": "a174a68a-0c1d-4bc1-bbbc-e18c2a909208"
+    },
+    {
+      "type": "route",
+      "uuid": "c55b255f-c843-497c-a34e-7e30abd95b3c"
+    },
+    {
+      "type": "route",
+      "uuid": "39fa37e4-33ef-4779-b383-87caebd38520"
+    },
+    {
+      "type": "route",
+      "uuid": "2356352e-ca4e-4d94-87e4-0d838059fc19"
+    }
+  ],
+  "proxyMode": false,
+  "proxyHost": "",
+  "proxyRemovePrefix": false,
+  "tlsOptions": {
+    "enabled": false,
+    "type": "CERT",
+    "pfxPath": "",
+    "certPath": "",
+    "keyPath": "",
+    "caPath": "",
+    "passphrase": ""
+  },
+  "cors": true,
+  "headers": [
+    {
+      "key": "Content-Type",
+      "value": "application/json"
+    },
+    {
+      "key": "Access-Control-Allow-Origin",
+      "value": "*"
+    },
+    {
+      "key": "Access-Control-Allow-Methods",
+      "value": "GET,POST,PUT,PATCH,DELETE,HEAD,OPTIONS"
+    },
+    {
+      "key": "Access-Control-Allow-Headers",
+      "value": "Content-Type, Origin, Accept, Authorization, Content-Length, X-Requested-With"
+    }
+  ],
+  "proxyReqHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "proxyResHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "data": [
+    {
+      "uuid": "f984de2f-aabe-4729-aa1b-448e55699e54",
+      "id": "kakh",
+      "name": "Hideouts",
+      "documentation": "",
+      "value": "[\n  {\n    \"name\": \"Primordial\",\n    \"poeVersion\": \"2\",\n    \"map\": \"Shrine Hideout\",\n    \"imgUrl\": \"https://hideoutshowcase.com/assets/images/guides/primordial.png\",\n    \"publishedAt\": \"2025-09-05T12:51:58.405Z\",\n    \"lastUpdatedAt\": \"2025-09-05T14:51:58.405Z\",\n    \"authorUsername\": \"Shinjoku\",\n    \"timesDownloaded\": 225,\n    \"commentCount\": 25,\n    \"timesFavorited\": 3,\n    \"hasMTX\": false,\n    \"music\": null,\n    \"description\": \"This is a lorem ipsum text for a Shrine Hideout upload.\\n\\nI have no idea what to say about it 'cause I don't know which hideout it is\\nPoggers!\",\n    \"tags\": [\"medieval\", \"silly\"],\n    \"decorations\": [],\n    \"changelogHistory\": [\n      {\n        \"version\": \"1.0\",\n        \"publishedAt\": \"2025-09-05T12:51:58.405Z\",\n        \"description\": \"First release\",\n        \"fileURL\": \"/celestial-quarters.sample.hideout\"\n      },\n      {\n        \"version\": \"1.1\",\n        \"publishedAt\": \"2025-09-05T14:51:58.405Z\",\n        \"description\": \"Added a thingie\",\n        \"fileURL\": \"/celestial-quarters.sample.hideout\"\n      }\n    ]\n  }\n]"
+    }
+  ],
+  "callbacks": []
+}
