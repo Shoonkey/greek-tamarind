@@ -2,7 +2,7 @@ import { environment } from '../../../environments/environment';
 import { ApiErrorCode } from '../../i18n/api.errors';
 
 type CommonHttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-type RequestData = BodyInit;
+type RequestData = Record<string, any>;
 
 interface OkApiResponse {
   ok: true;
@@ -17,6 +17,7 @@ interface OopsApiResponse {
 type ApiClientResponse = OkApiResponse | OopsApiResponse;
 
 interface RequestConfig {
+  params?: RequestData;
   body?: RequestData;
   method?: CommonHttpMethod;
 }
@@ -40,11 +41,29 @@ export abstract class BaseApiClient {
     endpoint: string,
     config: RequestConfig = {},
   ): Promise<ApiClientResponse> {
-    const url = `${this.apiURL}/${endpoint}`;
+    const { method, params, body } = config;
+
+    let url = `${this.apiURL}/${endpoint}`;
+
+    if (params) {
+      const encodedParams = new URLSearchParams(params);
+      url += `?${encodedParams}`;
+    }
+
+    let fetchConfig: RequestInit = {};
+
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/x-www-form-urlencoded');
+
+    if (method === 'POST' && body) {
+      headers.set('Content-Type', 'application/json');
+      fetchConfig.body = JSON.stringify(body);
+    }
+
+    fetchConfig.headers = headers;
 
     try {
-      const { method = 'GET', body } = config;
-      const response = await fetch(url, { method, body });
+      const response = await fetch(url, fetchConfig);
       const responseData = await response.json();
 
       if (!response.ok) {
