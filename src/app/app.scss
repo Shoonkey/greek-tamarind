@@ -8,5 +8,14 @@
 }
 
 .content {
-  padding: 2rem;
+  padding-block: 0.5rem;
+  padding-inline: 1.25rem;
+
+  @media screen and (width >= 600px) {
+    padding-inline: 2rem;
+  }
+
+  @media screen and (width >= 900px) {
+    padding: 3rem;
+  }
 }
