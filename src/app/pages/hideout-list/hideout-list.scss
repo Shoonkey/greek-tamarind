@@ -5,9 +5,20 @@
 }
 
 .hideout-list {
-  display: flex;
+  --items-per-line: 1;
+
+  display: grid;
+  grid-template-columns: repeat(var(--items-per-line), 1fr);
   gap: 1rem;
   justify-content: center;
   flex-wrap: wrap;
   list-style-type: none;
+
+  @media screen and (width >= 800px) {
+    --items-per-line: 2;
+  }
+
+  @media screen and (width >= 1200px) {
+    --items-per-line: 3;
+  }
 }
