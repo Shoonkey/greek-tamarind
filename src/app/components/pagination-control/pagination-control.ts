@@ -1,10 +1,10 @@
 import { Component, input, output, signal } from '@angular/core';
-import { Button } from '../button/button';
-import { Icon } from '../icon/icon';
+import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-pagination-control',
-  imports: [Button, Icon],
+  imports: [MatIconButton, MatIcon],
   templateUrl: './pagination-control.html',
   styleUrl: './pagination-control.scss',
 })

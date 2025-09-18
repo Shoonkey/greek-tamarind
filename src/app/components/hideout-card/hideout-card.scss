@@ -21,11 +21,13 @@
 
   font-size: 0.8rem;
   font-weight: bold;
-  color: var(--dark-highlight-color);
   text-align: center;
 
+  .map-name {
+    color: var(--dark-highlight-color);
+  }
+
   .short-info-group {
-    color: var(--text-primary);
     font-size: 0.8rem;
     letter-spacing: 0.7px;
     display: flex;

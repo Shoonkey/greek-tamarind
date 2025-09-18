@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { MatIconRegistry } from '@angular/material/icon';
+
 import { Navbar } from './components/navbar/navbar';
 
 @Component({
@@ -8,4 +10,10 @@ import { Navbar } from './components/navbar/navbar';
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
-export class App {}
+export class App {
+  iconRegistry = inject(MatIconRegistry);
+
+  constructor() {
+    this.iconRegistry.setDefaultFontSetClass('material-symbols-outlined');
+  }
+}

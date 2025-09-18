@@ -1,3 +1,5 @@
+@use '@angular/material' as mat;
+
 :host {
   display: contents;
 }
@@ -17,36 +19,41 @@ nav {
   font-size: 1.25rem;
   font-weight: bold;
   letter-spacing: 0.3px;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 }
 
 .user-action {
-  display: inherit;
+  display: flex;
+
+  button {
+    @include mat.icon-button-overrides(
+      (
+        icon-color: var(--mat-sys-on-surface),
+      )
+    );
+  }
 }
 
-.user-profile {
-  position: relative;
+.logged-user-notice {
+  display: flex;
+  align-items: center;
+
+  cursor: default;
+  padding-inline: 12px;
+  min-height: 24px;
+
+  &:hover {
+    background-color: inherit;
+  }
 }
 
-#user-dropdown {
-  display: none;
-  position: absolute;
-  top: 70px;
-  right: 0px;
-  border-radius: 1rem;
-
-  background: black;
-  list-style-type: none;
-  font-size: 0.8rem;
-  padding: 1em 1.5em;
-  min-width: 100px;
-  text-align: right;
-
-  &.open {
-    display: block;
-  }
-
-  a {
-    text-decoration: none;
-    padding: 0.5em;
-  }
+// Angular doesn't currently support icons on the right within menu items
+// so this does it manually
+.mat-mdc-menu-item .mat-icon {
+  order: 1;
+  margin: 0;
 }

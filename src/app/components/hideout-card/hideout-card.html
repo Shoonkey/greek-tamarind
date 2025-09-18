@@ -1,10 +1,16 @@
 @let _hideout = hideout();
+@let _selectedImg = selectedImg();
+@let _remainingImgs = remainingImgs();
 <div class="hideout-card">
-  <a [routerLink]="`/hideout/${_hideout.guid}`">
-    <img [src]="_hideout.imgUrl" [alt]="_hideout.imgAlt" />
-  </a>
+  <div class="image-gallery">
+    <a [routerLink]="`/hideout/${_hideout.guid}`">
+      <img [src]="_selectedImg.src" [alt]="_selectedImg.alt" />
+    </a>
+    <!-- TODO: Add remaining images as small images on the bottom right so the user can change between screenshots -->
+    @for (img of _remainingImgs; track $index) {}
+  </div>
   <div class="info-container">
-    <p>{{ _hideout.map }}</p>
+    <p class="map-name">{{ _hideout.map }}</p>
     <div class="short-info-group">
       <p>POE {{ _hideout.poeVersion }}</p>
       <p>{{ _hideout.rating }}/5</p>

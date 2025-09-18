@@ -1,33 +1,45 @@
 <nav>
   <section class="logo">
-    <!-- TODO: <app-logo /> -->
-    <!-- TODO: remove once proper logo comes in -->
-    <p>PoEtential Hideout</p>
+    <a routerLink="/">
+      <!-- TODO: <app-logo /> -->
+      <!-- TODO: remove once proper logo comes in -->
+      PoEtential Hideout
+    </a>
   </section>
   <section class="user-action">
-    <app-button>
-      <app-icon name="stack" title="Your uploaded hideouts" />
-    </app-button>
-    <app-button title="Upload hideout">
-      <app-icon name="file-arrow-up" />
-    </app-button>
-    <div class="user-profile">
-      @let dropdownId = 'user-dropdown';
-      <app-button
-        title="Profile"
-        aria-label="User options menu"
-        [attr.aria-expanded]="isDropdownOpen()"
-        [attr.aria-controls]="dropdownId"
-        (click)="toggleDropdown()"
+    @if (user) {
+      <a
+        mat-icon-button
+        matTooltip="Your uploaded hideouts"
+        [routerLink]="`/user/${user.username}`"
       >
-        <app-icon name="user-circle" size="md" />
-      </app-button>
-      <ul [id]="dropdownId" [class.open]="isDropdownOpen()">
-        <!-- <li><a>Change theme</a></li> -->
-        <!-- TODO: Allow changing theme -->
-        <li><a routerLink="/account">Account</a></li>
-        <li><app-button>Log out</app-button></li>
-      </ul>
-    </div>
+        <mat-icon>stacks</mat-icon>
+      </a>
+      <a mat-icon-button matTooltip="Upload hideout" routerLink="/hideout/upload">
+        <mat-icon>upload_file</mat-icon>
+      </a>
+      <div class="user-profile">
+        <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="User menu">
+          <mat-icon>account_circle</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <p class="logged-user-notice">
+            Logged in as&nbsp;<strong>{{ user.username }}</strong>
+          </p>
+          <mat-divider />
+          <!-- <button mat-menu-item>Change theme</button> -->
+          <!-- TODO: Allow changing theme -->
+          <a mat-menu-item routerLink="/settings">Settings <mat-icon>settings</mat-icon></a>
+          <button mat-menu-item (click)="logout()">
+            <span>Log out</span>
+            <mat-icon>logout</mat-icon>
+          </button>
+        </mat-menu>
+      </div>
+    } @else {
+      <button mat-icon-button matTooltip="Login/Signup" (click)="openAuthModal()">
+        <mat-icon>login</mat-icon>
+      </button>
+    }
   </section>
 </nav>

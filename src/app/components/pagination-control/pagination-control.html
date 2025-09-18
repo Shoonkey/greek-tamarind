@@ -1,22 +1,22 @@
 <!-- TODO: Disable buttons when one can't go forward or backward -->
 <div class="pagination-control">
-  <app-button (click)="handlePageChange(currentPage() - 1)"
-    ><app-icon name="caret-left"
-  /></app-button>
+  <button mat-icon-button (click)="handlePageChange(currentPage() - 1)">
+    <mat-icon>chevron_left</mat-icon>
+  </button>
   <div class="page-container">
     @if (editing()) {
       <form class="page-input" (submit)="handlePageFormSubmit($event)">
         <input type="number" min="1" [max]="totalPages()" required />
-        <button type="submit" class="confirm-btn" [attr.aria-hidden]="!editing()">
-          <app-icon name="check" />
+        <button mat-icon-button type="submit" class="confirm-btn" [attr.aria-hidden]="!editing()">
+          <mat-icon>check</mat-icon>
         </button>
       </form>
     } @else {
-      <button (click)="toggleInputMode()">{{ currentPage() }}</button>
+      <button mat-icon-button (click)="toggleInputMode()">{{ currentPage() }}</button>
     }
     <p>&nbsp;/ {{ totalPages() }}</p>
   </div>
-  <app-button (click)="handlePageChange(currentPage() + 1)"
-    ><app-icon name="caret-right"
-  /></app-button>
+  <button mat-icon-button (click)="handlePageChange(currentPage() + 1)">
+    <mat-icon>chevron_right</mat-icon>
+  </button>
 </div>

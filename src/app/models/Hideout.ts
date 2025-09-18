@@ -1,4 +1,5 @@
 import { HideoutChangelogHistory } from './HideoutChangelogHistory';
+import { HideoutImage } from './HideoutImage';
 
 export interface Hideout {
   guid: string;
@@ -6,18 +7,16 @@ export interface Hideout {
   poeVersion: '1' | '2';
   rating: number;
   map: string;
-  imgUrl: string;
-  imgAlt?: string;
+  images: HideoutImage[];
   publishedAt: string;
   lastUpdatedAt: string;
   authorUsername: string;
   timesDownloaded: number;
   commentCount: number;
   timesFavorited: number;
-  hasMTX: boolean;
   music: string | null;
   description: string | null;
   tags: string[];
-  decorations: any[];
+  hasMTX: boolean;
   changelogHistory: HideoutChangelogHistory[];
 }

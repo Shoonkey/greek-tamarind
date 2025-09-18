@@ -1,5 +1,5 @@
 /**
- * @filename: lint-staged.config.js
+ * @filename: prettier.config.js
  * @type {import('prettier').Config}
  */
 const config = {

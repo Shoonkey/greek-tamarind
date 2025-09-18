@@ -6,7 +6,7 @@ export const mockedHideout: Hideout = {
   rating: 4.7,
   poeVersion: '2',
   map: 'Shrine Hideout',
-  imgUrl: 'https://hideoutshowcase.com/assets/images/guides/primordial.png',
+  images: [{ src: '/example.png', alt: '' }],
   publishedAt: '2025-09-05T12:51:58.405Z',
   lastUpdatedAt: '2025-09-05T14:51:58.405Z',
   authorUsername: 'Shinjoku',
@@ -18,7 +18,6 @@ export const mockedHideout: Hideout = {
   description:
     "This is a lorem ipsum text for a Shrine Hideout upload.\n\nI have no idea what to say about it 'cause I don't know which hideout it is\nPoggers!",
   tags: ['medieval', 'silly'],
-  decorations: [],
   changelogHistory: [
     {
       version: '1.0',

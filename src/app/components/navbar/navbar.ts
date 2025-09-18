@@ -1,20 +1,47 @@
-import { Component, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, inject, signal } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatDivider } from '@angular/material/divider';
 
-import { Button } from '../button/button';
-import { Icon } from '../icon/icon';
+import { AuthProvider } from '../../services/auth-provider/auth-provider';
 
 @Component({
   selector: 'app-navbar',
-  imports: [Button, Icon, RouterLink],
+  imports: [
+    RouterLink,
+    MatIcon,
+    MatIconButton,
+    MatMenu,
+    MatMenuItem,
+    MatMenuTrigger,
+    MatTooltip,
+    MatDivider,
+  ],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
 })
 export class Navbar {
-  isDropdownOpen = signal<boolean>(false);
+  authProvider = inject(AuthProvider);
+  router = inject(Router);
 
-  toggleDropdown() {
-    console.log('toggle');
-    this.isDropdownOpen.update((open) => !open);
+  user = this.authProvider.user;
+
+  authModalOpen = signal<boolean>(false);
+
+  // TODO: implement auth modal component
+  openAuthModal() {
+    this.authModalOpen.set(true);
+  }
+
+  login(username: string, password: string) {
+    this.authProvider.login();
+  }
+
+  logout() {
+    this.authProvider.logout();
+    this.router.navigateByUrl('/');
   }
 }

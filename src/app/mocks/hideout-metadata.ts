@@ -5,6 +5,6 @@ export const mockedHideoutMetadata: HideoutMetadata = {
   poeVersion: '2',
   rating: 4.8,
   map: 'Shrine Hideout',
-  imgUrl: 'https://hideoutshowcase.com/assets/images/guides/primordial.png',
   hasMTX: false,
+  images: [{ src: '/example.png', alt: '' }],
 };
