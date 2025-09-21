@@ -1,21 +1,46 @@
-@let _error = error();
+<!-- TODO: Move to own component -->
+<div class="filter-list">
+  <app-acms-chip-filter
+    [items]="hideoutMaps()"
+    label="Maps"
+    select-aria-label="Hideout map selection"
+  />
+
+  <app-acms-chip-filter
+    [items]="hideoutTags()"
+    label="Tags"
+    select-aria-label="Hideout tag selection"
+  />
+</div>
+
+@let _errors = errors();
 @let _loading = loading();
 @let _hideouts = hideouts();
+@let _pageCount = pageCount();
 
 @if (_loading) {
   <p>Loading...</p>
-} @else if (_error) {
-  <p class="error">{{ _error }}</p>
+} @else if (_errors.length > 0) {
+  <div class="error-list">
+    @for (err of _errors; track $index) {
+      <p class="error">{{ err }}</p>
+    }
+  </div>
 } @else if (!_hideouts) {
   <p>No hideouts available</p>
 } @else {
   <div class="hideout-list-container">
-    <app-pagination-control [currentPage]="1" [totalPages]="4" (pageChange)="updatePage($event)" />
     <ul class="hideout-list">
-      @for (hideout of hideouts(); track $index) {
+      @for (hideout of hideouts(); track hideout.guid) {
         <li><app-hideout-card [hideout]="hideout" /></li>
       }
     </ul>
-    <app-pagination-control [currentPage]="1" [totalPages]="4" (pageChange)="updatePage($event)" />
+    @if (_pageCount) {
+      <app-pagination-control
+        [currentPage]="1"
+        (pageChanged)="handlePageChange($event)"
+        [totalPages]="_pageCount"
+      />
+    }
   </div>
 }

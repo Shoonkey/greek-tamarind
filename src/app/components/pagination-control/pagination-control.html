@@ -1,6 +1,6 @@
 <!-- TODO: Disable buttons when one can't go forward or backward -->
 <div class="pagination-control">
-  <button mat-icon-button (click)="handlePageChange(currentPage() - 1)">
+  <button mat-icon-button (click)="pageChanged.emit(currentPage() - 1)">
     <mat-icon>chevron_left</mat-icon>
   </button>
   <div class="page-container">
@@ -16,7 +16,7 @@
     }
     <p>&nbsp;/ {{ totalPages() }}</p>
   </div>
-  <button mat-icon-button (click)="handlePageChange(currentPage() + 1)">
+  <button mat-icon-button (click)="pageChanged.emit(currentPage() + 1)">
     <mat-icon>chevron_right</mat-icon>
   </button>
 </div>

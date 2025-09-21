@@ -50,10 +50,3 @@ nav {
     background-color: inherit;
   }
 }
-
-// Angular doesn't currently support icons on the right within menu items
-// so this does it manually
-.mat-mdc-menu-item .mat-icon {
-  order: 1;
-  margin: 0;
-}

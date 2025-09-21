@@ -1,0 +1,37 @@
+<mat-form-field>
+  <mat-label>{{ label() }}</mat-label>
+  <mat-chip-grid #chipGrid aria-label="{{ selectAriaLabel() }}">
+    @let firstSelectedItem = selectedItems()[0];
+    @let extraItemsCount = selectedItems().length - 1;
+    @if (firstSelectedItem) {
+      <mat-chip-row
+        [matBadge]="`+ ${extraItemsCount}`"
+        [matBadgeHidden]="extraItemsCount === 0"
+        [matBadgeDescription]="getSelectionBadgeDescription(extraItemsCount)"
+      >
+        {{ firstSelectedItem }}
+      </mat-chip-row>
+    }
+  </mat-chip-grid>
+  <input
+    #queryInput
+    name="query"
+    [placeholder]="inputPlaceholder()"
+    [(ngModel)]="query"
+    [matChipInputFor]="chipGrid"
+    [matAutocomplete]="autocomplete"
+  />
+  <mat-autocomplete
+    #autocomplete="matAutocomplete"
+    (optionSelected)="handleSelection($event); queryInput.value = ''"
+    [hideSingleSelectionIndicator]="true"
+  >
+    @let list = filteredItems();
+    @for (item of list; track item) {
+      <mat-option [value]="item">
+        {{ item }}
+        <mat-icon>{{ isItemSelected(list, item) ? 'check_circle' : 'circle' }}</mat-icon>
+      </mat-option>
+    }
+  </mat-autocomplete>
+</mat-form-field>

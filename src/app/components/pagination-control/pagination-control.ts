@@ -14,14 +14,10 @@ export class PaginationControl {
 
   editing = signal<boolean>(false);
 
-  pageChange = output<number>();
+  pageChanged = output<number>();
 
   toggleInputMode() {
     this.editing.update((isEditing) => !isEditing);
-  }
-
-  handlePageChange(newPage: number) {
-    this.pageChange.emit(newPage);
   }
 
   handlePageFormSubmit(e: SubmitEvent) {
@@ -31,6 +27,6 @@ export class PaginationControl {
     const pageInput = form.elements[0] as HTMLInputElement;
 
     const newPage = parseInt(pageInput.value);
-    this.handlePageChange(newPage);
+    this.pageChanged.emit(newPage);
   }
 }

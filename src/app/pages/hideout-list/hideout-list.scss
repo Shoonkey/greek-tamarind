@@ -1,3 +1,13 @@
+@use '@angular/material' as mat;
+
+:host {
+  @include mat.chips-overrides(
+    (
+      elevated-container-color: rgb(58, 58, 58),
+    )
+  );
+}
+
 .hideout-list-container {
   display: flex;
   flex-direction: column;
@@ -21,4 +31,9 @@
   @media screen and (width >= 1200px) {
     --items-per-line: 3;
   }
+}
+
+.filter-list {
+  display: flex;
+  gap: 1rem;
 }
