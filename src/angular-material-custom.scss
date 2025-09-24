@@ -1,11 +1,16 @@
-// Angular Material unsupported customizations
-// this sets icons in menu items and autocompletes to be on the right side instead of on the left
+@use '@angular/material' as mat;
 
+// Angular Material manual overrides -------------------------
+
+// ICON (in the context of menus and autocompletes)
+
+// this sets icons in menu items and autocompletes to be on the right side instead of on the left
 :is(.mat-mdc-menu-item, .mat-mdc-autocomplete-panel) mat-icon.mat-icon {
   order: 1;
   margin-right: 0;
 }
 
+// AUTOCOMPLETE
 .mat-mdc-autocomplete-panel mat-option.mat-mdc-option {
   font-size: 0.85rem;
   padding-block: 0.5rem;
@@ -13,7 +18,28 @@
   gap: 1rem;
 }
 
+// CHIP (badge position; text overflow)
+
 // this allows badge to appear above chip instead of below it
-.mat-mdc-chip > .mat-badge-content {
+.mat-mdc-chip .mat-badge-content {
   z-index: 1;
+}
+
+// this takes out unnecessary margin fixes from Material's components and
+// makes sure the text doesn't overflow the chips
+.mdc-evolution-chip-set__chips {
+  margin-left: 0px !important;
+
+  .mdc-evolution-chip {
+    margin-left: 0px !important;
+  }
+
+  .mdc-evolution-chip__action--primary {
+    overflow: hidden !important;
+    padding-inline: 8px !important;
+  }
+
+  .mat-mdc-chip-action-label {
+    overflow: hidden !important;
+  }
 }
