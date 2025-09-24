@@ -1,4 +1,4 @@
-import { Component, computed, input, model, output, signal } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   MatAutocompleteModule,
@@ -9,7 +9,6 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 
-// TODO(issue): Fix `query` being set to the item value on option selection
 // TODO(issue): Fix menu closing automatically on option selection
 
 // autocomplete multiselect chip filter
@@ -32,8 +31,7 @@ export class AcmsChipFilter {
   selectAriaLabel = input.required<string>({ alias: 'select-aria-label' });
   inputPlaceholder = input<string>('');
 
-  query = model('');
-
+  query = signal<string>('');
   selectedItems = signal<string[]>([]);
 
   updated = output<string[]>();
@@ -58,7 +56,8 @@ export class AcmsChipFilter {
     return queryMatchingItems;
   }
 
-  isItemSelected(list: string[], item: string) {
+  isItemSelected(item: string) {
+    const list = this.selectedItems();
     return list.includes(item);
   }
 
@@ -74,8 +73,10 @@ export class AcmsChipFilter {
   }
 
   handleSelection({ option }: MatAutocompleteSelectedEvent) {
+    this.query.set('');
+
     this.selectedItems.update((_selected) => {
-      if (this.isItemSelected(_selected, option.viewValue)) {
+      if (this.isItemSelected(option.viewValue)) {
         const idx = _selected.findIndex((item) => item === option.viewValue);
         return _selected.toSpliced(idx, 1);
       }

@@ -1,3 +1,13 @@
+@use '@angular/material' as mat;
+
 :host {
   display: contents;
+}
+
+mat-option mat-icon.selected {
+  @include mat.icon-overrides(
+    (
+      color: var(--dark-highlight-color),
+    )
+  );
 }

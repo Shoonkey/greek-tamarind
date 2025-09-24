@@ -5,6 +5,7 @@
     @let extraItemsCount = selectedItems().length - 1;
     @if (firstSelectedItem) {
       <mat-chip-row
+        class="selected-item"
         [matBadge]="`+ ${extraItemsCount}`"
         [matBadgeHidden]="extraItemsCount === 0"
         [matBadgeDescription]="getSelectionBadgeDescription(extraItemsCount)"
@@ -14,23 +15,26 @@
     }
   </mat-chip-grid>
   <input
-    #queryInput
     name="query"
     [placeholder]="inputPlaceholder()"
-    [(ngModel)]="query"
     [matChipInputFor]="chipGrid"
     [matAutocomplete]="autocomplete"
+    [value]="query()"
+    (input)="query.set($event.target.value)"
   />
   <mat-autocomplete
     #autocomplete="matAutocomplete"
-    (optionSelected)="handleSelection($event); queryInput.value = ''"
+    (optionSelected)="handleSelection($event)"
     [hideSingleSelectionIndicator]="true"
   >
     @let list = filteredItems();
     @for (item of list; track item) {
+      @let isSelected = isItemSelected(item);
       <mat-option [value]="item">
         {{ item }}
-        <mat-icon>{{ isItemSelected(list, item) ? 'check_circle' : 'circle' }}</mat-icon>
+        <mat-icon [class.selected]="isSelected">
+          {{ isSelected ? 'check_circle' : 'circle' }}
+        </mat-icon>
       </mat-option>
     }
   </mat-autocomplete>
