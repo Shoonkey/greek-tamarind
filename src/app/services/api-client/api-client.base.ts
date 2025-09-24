@@ -1,4 +1,7 @@
+import { inject } from '@angular/core';
 import { environment } from '../../../environments/environment';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { catchError } from 'rxjs';
 
 type CommonHttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 type RequestData = Record<string, any>;
@@ -7,25 +10,12 @@ type RequestData = Record<string, any>;
 export enum ApiErrorCode {
   HIDEOUT_NOT_FOUND,
   USER_NOT_FOUND,
+  UNAUTHORIZED_OPERATION,
 }
 
-enum RequestErrorCode {
-  REQUEST_CANCELLED,
-  REQUEST_BLOCKED,
-  INVALID_REQUEST,
+enum ClientErrorCode {
+  REQUEST_TIMED_OUT,
 }
-
-interface OkApiResponse<T> {
-  ok: true;
-  data: T;
-}
-
-interface OopsApiResponse {
-  ok: false;
-  errorMsg: string;
-}
-
-export type ApiClientResponse<T> = OkApiResponse<T> | OopsApiResponse;
 
 interface RequestConfig {
   params?: RequestData;
@@ -34,28 +24,28 @@ interface RequestConfig {
 }
 
 export abstract class BaseApiClient {
+  protected http = inject(HttpClient);
+
   private apiURL = environment.apiURL;
 
-  private Ok<T>(data: T): OkApiResponse<T> {
-    return { ok: true, data };
-  }
-
-  private Oops(errorCode?: ApiErrorCode | RequestErrorCode): OopsApiResponse {
-    return {
-      ok: false,
-      errorMsg: this.getErrorMsgFromCode(errorCode),
-    };
+  private getClientErrorMsg(errorCode?: ClientErrorCode) {
+    switch (errorCode) {
+      case ClientErrorCode.REQUEST_TIMED_OUT:
+        return 'Unable to reach API';
+      default:
+        return 'An unexpected error happened';
+    }
   }
 
   // TODO: Make a proper map between error codes and error messages
-  private getErrorMsgFromCode(errorCode?: ApiErrorCode | RequestErrorCode) {
+  private getApiErrorMsg(errorCode?: ApiErrorCode) {
     switch (errorCode) {
-      case RequestErrorCode.REQUEST_BLOCKED:
-        return 'Request blocked';
-      case RequestErrorCode.REQUEST_CANCELLED:
-        return 'Request cancelled';
-      case RequestErrorCode.INVALID_REQUEST:
-        return 'Unable to reach API';
+      case ApiErrorCode.UNAUTHORIZED_OPERATION:
+        return 'Unauthorized operation';
+      case ApiErrorCode.USER_NOT_FOUND:
+        return "Couldn't find user";
+      case ApiErrorCode.HIDEOUT_NOT_FOUND:
+        return "Couldn't find hideout";
       default:
         return 'An unexpected error happened';
     }
@@ -67,56 +57,28 @@ export abstract class BaseApiClient {
     console.error('An API client request failed.', ...e);
   }
 
-  protected async requestAPI<T>(
-    endpoint: string,
-    config: RequestConfig = {},
-  ): Promise<ApiClientResponse<T>> {
-    const { method, params, body } = config;
+  protected requestAPI<T>(endpoint: string, config: RequestConfig = {}) {
+    const { method = 'GET', params, body } = config;
 
-    let url = `${this.apiURL}${endpoint}`;
+    const url = `${this.apiURL}${endpoint}`;
 
-    if (params) {
-      const encodedParams = new URLSearchParams(params);
-      url += `?${encodedParams}`;
-    }
+    return this.http
+      .request<T>(method, url, {
+        responseType: 'json',
+        params,
+        body,
+      })
+      .pipe(
+        catchError(({ status, error: response }: HttpErrorResponse) => {
+          this.logError(response.errorCode);
 
-    let fetchConfig: RequestInit = {};
+          let errorMsg;
 
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/x-www-form-urlencoded');
+          if (status === 0) errorMsg = this.getClientErrorMsg(ClientErrorCode.REQUEST_TIMED_OUT);
+          else errorMsg = this.getApiErrorMsg(response.errorCode as ApiErrorCode);
 
-    if (method === 'POST' && body) {
-      headers.set('Content-Type', 'application/json');
-      fetchConfig.body = JSON.stringify(body);
-    }
-
-    fetchConfig.headers = headers;
-
-    try {
-      const response = await fetch(url, fetchConfig);
-      const responseData = await response.json();
-
-      if (!response.ok) {
-        if (!responseData?.errorCode)
-          this.logError("The API returned ok=false but didn't return an error code");
-
-        return this.Oops(responseData.errorCode as ApiErrorCode);
-      }
-
-      return this.Ok(responseData);
-    } catch (e) {
-      // Known exceptions for fetch:
-      // https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch#exceptions
-      if (e instanceof DOMException) {
-        if (e.name === 'AbortError') return this.Oops(RequestErrorCode.REQUEST_CANCELLED);
-        if (e.name === 'NotAllowedError') return this.Oops(RequestErrorCode.REQUEST_BLOCKED);
-      }
-
-      // If it reaches this point, a TypeError was thrown, due to invalid setup, a network error,
-      // or being blocked by a permissions policy. The most likely here is that either the user
-      // isn't connected to the internet or the API didn't respond.
-      this.logError('Unexpected fetch error', e);
-      return this.Oops(RequestErrorCode.INVALID_REQUEST);
-    }
+          throw new Error(errorMsg);
+        }),
+      );
   }
 }

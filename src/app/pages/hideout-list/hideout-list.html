@@ -37,7 +37,7 @@
     </ul>
     @if (_pageCount) {
       <app-pagination-control
-        [currentPage]="1"
+        [currentPage]="currentPage()"
         (pageChanged)="handlePageChange($event)"
         [totalPages]="_pageCount"
       />

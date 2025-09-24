@@ -1,10 +1,27 @@
 import { Injectable } from '@angular/core';
 
-import { BaseApiClient } from './api-client.base';
 import { HideoutMetadata } from '../../models/HideoutMetadata';
+import { BaseApiClient } from './api-client.base';
+import { map } from 'rxjs';
 
 export interface PaginationOptions {
   page: number;
+}
+
+interface GetHideoutListResponse {
+  list: HideoutMetadata[];
+}
+
+interface GetHideoutMapsResponse {
+  maps: any;
+}
+
+interface GetHideoutTagsResponse {
+  tags: string[];
+}
+
+interface GetHideoutPageCountResponse {
+  pageCount: number;
 }
 
 @Injectable({
@@ -12,20 +29,22 @@ export interface PaginationOptions {
 })
 export class ApiClient extends BaseApiClient {
   getHideoutList(opts: PaginationOptions) {
-    return this.requestAPI<{ list: HideoutMetadata[] }>('/hideout/list', {
+    return this.requestAPI<GetHideoutListResponse>('/hideout/list', {
       params: { page: opts.page },
-    });
+    }).pipe(map((v) => v.list));
   }
 
   getHideoutMaps() {
-    return this.requestAPI<{ maps: string[] }>('/hideout/maps');
+    return this.requestAPI<GetHideoutMapsResponse>('/hideout/maps').pipe(map((v) => v.maps));
   }
 
   getHideoutTags() {
-    return this.requestAPI<{ tags: string[] }>('/hideout/tags');
+    return this.requestAPI<GetHideoutTagsResponse>('/hideout/tags').pipe(map((v) => v.tags));
   }
 
   getHideoutPageCount() {
-    return this.requestAPI<{ pageCount: number }>('/hideout/page-count');
+    return this.requestAPI<GetHideoutPageCountResponse>('/hideout/page-count').pipe(
+      map((v) => v.pageCount),
+    );
   }
 }

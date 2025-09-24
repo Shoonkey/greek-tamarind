@@ -1,9 +1,10 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { finalize, forkJoin } from 'rxjs';
 
 import { ApiClient, PaginationOptions } from '../../services/api-client/api-client';
+import { HideoutMetadata } from '../../models/HideoutMetadata';
 import { HideoutCard } from '../../components/hideout-card/hideout-card';
 import { PaginationControl } from '../../components/pagination-control/pagination-control';
-import { HideoutMetadata } from '../../models/HideoutMetadata';
 import { AcmsChipFilter } from '../../components/acms-chip-filter/acms-chip-filter';
 
 @Component({
@@ -25,46 +26,39 @@ export class HideoutList implements OnInit {
   errors = signal<string[]>([]);
 
   ngOnInit() {
-    Promise.all([
-      this.loadHideoutPageCount(),
-      this.loadHideoutTags(),
-      this.loadHideoutMaps(),
-      this.loadHideoutTags(),
-      this.loadHideouts({ page: this.currentPage() }),
-    ]);
+    const api = this.apiClient;
+
+    this.loading.set(true);
+
+    forkJoin({
+      pageCount: api.getHideoutPageCount(),
+      tags: api.getHideoutTags(),
+      maps: api.getHideoutMaps(),
+      list: api.getHideoutList({ page: this.currentPage() }),
+    })
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: ({ pageCount, tags, maps, list }) => {
+          this.pageCount.set(pageCount);
+          this.hideoutTags.set(tags);
+          this.hideoutMaps.set(maps);
+          this.hideouts.set(list);
+        },
+        error: (err) => {}, // TODO: handle error
+      });
+  }
+
+  loadHideouts({ page }: PaginationOptions) {
+    this.apiClient.getHideoutList({ page });
   }
 
   handlePageChange(newPage: number) {
     this.currentPage.set(newPage);
-    this.loadHideouts({ page: newPage });
-  }
 
-  async loadHideoutPageCount() {
-    const response = await this.apiClient.getHideoutPageCount();
-
-    if (response.ok) this.pageCount.set(response.data.pageCount);
-    else this.addError(response.errorMsg);
-  }
-
-  async loadHideoutTags() {
-    const response = await this.apiClient.getHideoutTags();
-
-    if (response.ok) this.hideoutTags.set(response.data.tags);
-    else this.addError(response.errorMsg);
-  }
-
-  async loadHideoutMaps() {
-    const response = await this.apiClient.getHideoutMaps();
-
-    if (response.ok) this.hideoutMaps.set(response.data.maps);
-    else this.addError(response.errorMsg);
-  }
-
-  async loadHideouts({ page }: PaginationOptions) {
-    const response = await this.apiClient.getHideoutList({ page });
-
-    if (response.ok) this.hideouts.set(response.data.list);
-    else this.addError(response.errorMsg);
+    this.loading.set(true);
+    // TODO: implement hideout reload
+    // this.loadHideouts({ page: newPage });
+    // this.loading.set(false);
   }
 
   addError(errorMsg: string) {
