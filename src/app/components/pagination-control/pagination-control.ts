@@ -1,10 +1,13 @@
 import { Component, input, output, signal } from '@angular/core';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
+import { MatInput } from '@angular/material/input';
+import { MatFormField } from '@angular/material/form-field';
+import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-pagination-control',
-  imports: [MatIconButton, MatIcon],
+  imports: [MatIconButton, MatIcon, MatInput, MatFormField, MatTooltip],
   templateUrl: './pagination-control.html',
   styleUrl: './pagination-control.scss',
 })
@@ -28,5 +31,6 @@ export class PaginationControl {
 
     const newPage = parseInt(pageInput.value);
     this.pageChanged.emit(newPage);
+    this.editing.set(false);
   }
 }

@@ -1,22 +1,49 @@
 <!-- TODO: Disable buttons when one can't go forward or backward -->
 <div class="pagination-control">
-  <button mat-icon-button (click)="pageChanged.emit(currentPage() - 1)">
+  <button
+    mat-icon-button
+    [disabled]="editing() || currentPage() === 1"
+    (click)="pageChanged.emit(currentPage() - 1)"
+    matTooltip="Previous page"
+  >
     <mat-icon>chevron_left</mat-icon>
   </button>
   <div class="page-container">
     @if (editing()) {
-      <form class="page-input" (submit)="handlePageFormSubmit($event)">
-        <input type="number" min="1" [max]="totalPages()" required />
-        <button mat-icon-button type="submit" class="confirm-btn" [attr.aria-hidden]="!editing()">
+      <form class="page-form" (submit)="handlePageFormSubmit($event)">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <input
+            matInput
+            type="number"
+            min="1"
+            [max]="totalPages()"
+            [value]="currentPage()"
+            required
+          />
+        </mat-form-field>
+        <button
+          mat-icon-button
+          type="submit"
+          class="confirm-btn"
+          [attr.aria-hidden]="!editing()"
+          matTooltip="Confirm"
+        >
           <mat-icon>check</mat-icon>
         </button>
       </form>
     } @else {
-      <button mat-icon-button (click)="toggleInputMode()">{{ currentPage() }}</button>
+      <button class="change-page-btn" mat-icon-button (click)="toggleInputMode()">
+        {{ currentPage() }}
+      </button>
     }
     <p>&nbsp;/ {{ totalPages() }}</p>
   </div>
-  <button mat-icon-button (click)="pageChanged.emit(currentPage() + 1)">
+  <button
+    mat-icon-button
+    [disabled]="editing() || currentPage() === totalPages()"
+    (click)="pageChanged.emit(currentPage() + 1)"
+    matTooltip="Next page"
+  >
     <mat-icon>chevron_right</mat-icon>
   </button>
 </div>
