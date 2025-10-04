@@ -1,42 +1,36 @@
-@let _errors = errors();
+@let _hideouts = currentPageHideouts();
 @let _loading = loading();
-@let _hideouts = hideouts();
-@let _pageCount = pageCount();
-@let _filters = filters();
+@let _errors = errors();
 
-<div class="content">
-  @if (_loading) {
-    <p>Loading...</p>
-  } @else if (_errors.length > 0) {
-    <div class="error-list">
-      @for (err of _errors; track $index) {
-        <p class="error">{{ err }}</p>
+@if (_loading) {
+  <p>Loading...</p>
+} @else if (_errors.length > 0) {
+  <div class="error-list">
+    @for (err of _errors; track $index) {
+      <p class="error">{{ err }}</p>
+    }
+  </div>
+} @else if (!_hideouts) {
+  <p>No hideouts available</p>
+} @else {
+  <form (submit)="performSearch($event)">
+    <app-hideout-list-filters
+      [base-data]="filtersBaseData()"
+      [filters]="filters()"
+      (updated)="updateFilters($event)"
+    />
+    <button class="search-btn" matButton="filled" type="submit">Search</button>
+  </form>
+  <div class="hideout-list-container">
+    <ul class="hideout-list">
+      @for (hideout of _hideouts; track hideout.guid) {
+        <li class="hideout-item"><app-hideout-card [hideout]="hideout" /></li>
       }
-    </div>
-  } @else if (!_hideouts) {
-    <p>No hideouts available</p>
-  } @else {
-    <form (submit)="performSearch($event)">
-      <app-hideout-list-filters
-        [base-data]="filtersBaseData()"
-        [filters]="_filters"
-        (updated)="updateFilters($event)"
-      />
-      <button class="search-btn" matButton="filled" type="submit">Search</button>
-    </form>
-    <div class="hideout-list-container">
-      <ul class="hideout-list">
-        @for (hideout of hideouts(); track hideout.guid) {
-          <li><app-hideout-card [hideout]="hideout" /></li>
-        }
-      </ul>
-      @if (_pageCount) {
-        <app-pagination-control
-          [currentPage]="currentPage()"
-          (pageChanged)="handlePageChange($event)"
-          [totalPages]="_pageCount"
-        />
-      }
-    </div>
-  }
-</div>
+    </ul>
+    <app-pagination-control
+      [currentPage]="currentClientPage()"
+      (pageChanged)="handlePageChange($event)"
+      [totalPages]="clientPageCount()"
+    />
+  </div>
+}

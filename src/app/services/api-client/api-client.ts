@@ -20,6 +20,7 @@ export interface HideoutListOptions {
 
 interface GetHideoutListResponse {
   list: HideoutMetadata[];
+  matchCount: number;
 }
 
 interface GetHideoutMapsResponse {
@@ -31,7 +32,8 @@ interface GetHideoutTagsResponse {
 }
 
 interface GetHideoutPageCountResponse {
-  pageCount: number;
+  itemsPerPage: number;
+  itemCount: number;
 }
 
 @Injectable({
@@ -41,7 +43,7 @@ export class ApiClient extends BaseApiClient {
   getHideoutList({ page, filters }: HideoutListOptions) {
     return this.requestAPI<GetHideoutListResponse>('/hideout/list', {
       params: { page, filters: JSON.stringify(filters) },
-    }).pipe(map((v) => v.list));
+    });
   }
 
   getHideoutMaps() {
@@ -52,9 +54,7 @@ export class ApiClient extends BaseApiClient {
     return this.requestAPI<GetHideoutTagsResponse>('/hideout/tags').pipe(map((v) => v.tags));
   }
 
-  getHideoutPageCount() {
-    return this.requestAPI<GetHideoutPageCountResponse>('/hideout/page-count').pipe(
-      map((v) => v.pageCount),
-    );
+  getHideoutPaginationData() {
+    return this.requestAPI<GetHideoutPageCountResponse>('/hideout/pagination');
   }
 }

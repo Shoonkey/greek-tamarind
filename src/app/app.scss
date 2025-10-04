@@ -1,7 +1,8 @@
 :host {
-  display: block;
-  width: 100dvw;
-  min-height: 100dvh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  width: 100%;
+  height: 100dvh;
 }
 
 .content {
@@ -10,9 +11,5 @@
 
   @media screen and (width >= 600px) {
     padding-inline: 2rem;
-  }
-
-  @media screen and (width >= 900px) {
-    padding: 3rem;
   }
 }
