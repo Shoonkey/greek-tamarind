@@ -19,6 +19,7 @@ describe('HideoutListFilters', () => {
     componentRef = fixture.componentRef;
 
     componentRef.setInput('base-data', { tags: [], maps: [] });
+    componentRef.setInput('filters', {});
 
     await fixture.whenStable();
   });

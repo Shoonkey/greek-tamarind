@@ -1,10 +1,11 @@
 import { HideoutChangelogHistory } from './HideoutChangelogHistory';
 import { HideoutImage } from './HideoutImage';
+import { PoeVersion } from './PoeVersion';
 
 export interface Hideout {
   guid: string;
   name: string;
-  poeVersion: '1' | '2';
+  poeVersion: PoeVersion;
   rating: number;
   map: string;
   images: HideoutImage[];

@@ -1,8 +1,9 @@
 import { HideoutMetadata } from '../models/HideoutMetadata';
+import { PoeVersion } from '../models/PoeVersion';
 
 export const mockedHideoutMetadata: HideoutMetadata = {
   guid: 'random-guid',
-  poeVersion: '2',
+  poeVersion: PoeVersion.Two,
   rating: 4.8,
   map: 'Shrine Hideout',
   hasMTX: false,

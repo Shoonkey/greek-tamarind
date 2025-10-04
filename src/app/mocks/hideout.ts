@@ -1,10 +1,11 @@
 import { Hideout } from '../models/Hideout';
+import { PoeVersion } from '../models/PoeVersion';
 
 export const mockedHideout: Hideout = {
   guid: 'random-guid',
   name: 'Primordial',
   rating: 4.7,
-  poeVersion: '2',
+  poeVersion: PoeVersion.Two,
   map: 'Shrine Hideout',
   images: [{ src: '/example.png', alt: '' }],
   publishedAt: '2025-09-05T12:51:58.405Z',

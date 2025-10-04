@@ -2,12 +2,20 @@ import { Injectable } from '@angular/core';
 import { map } from 'rxjs';
 
 import { HideoutMetadata } from '../../models/HideoutMetadata';
+import { PoeVersion } from '../../models/PoeVersion';
 import { BaseApiClient } from './api-client.base';
-import { HideoutListFiltersOutput } from '../../components/hideout-list-filters/hideout-list-filters';
+
+export interface HideoutListFiltersInput {
+  poeVersion?: PoeVersion;
+  hasMTX?: boolean;
+  title?: string;
+  maps?: string[];
+  tags?: string[];
+}
 
 export interface HideoutListOptions {
   page: number;
-  filters: HideoutListFiltersOutput;
+  filters: HideoutListFiltersInput;
 }
 
 interface GetHideoutListResponse {

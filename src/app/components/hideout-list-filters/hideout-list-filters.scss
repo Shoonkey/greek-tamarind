@@ -1,4 +1,14 @@
 .filter-list {
   display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 1rem;
+}
+
+.poe-version-field {
+  p {
+    font-size: 0.8rem;
+    text-align: center;
+  }
 }
