@@ -1,0 +1,15 @@
+@let _data = filtersBaseData();
+<div class="filter-list">
+  <app-acms-chip-filter
+    [items]="_data.maps"
+    label="Maps"
+    select-aria-label="Hideout map selection"
+    (updated)="updateFilter('maps', $event)"
+  />
+  <app-acms-chip-filter
+    [items]="_data.tags"
+    label="Tags"
+    select-aria-label="Hideout tag selection"
+    (updated)="updateFilter('tags', $event)"
+  />
+</div>

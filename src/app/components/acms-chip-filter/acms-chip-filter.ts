@@ -34,7 +34,7 @@ export class AcmsChipFilter {
   query = signal<string>('');
   selectedItems = signal<string[]>([]);
 
-  updated = output<string[]>();
+  updated = output<string[] | null>();
 
   isActive = computed<boolean>(() => this.selectedItems().length > 0);
   filteredItems = computed<string[]>(() => {
@@ -84,6 +84,7 @@ export class AcmsChipFilter {
       return [..._selected, option.viewValue];
     });
 
-    this.updated.emit(this.selectedItems());
+    const selected = this.selectedItems();
+    this.updated.emit(selected.length > 0 ? selected : null);
   }
 }

@@ -1,7 +1,8 @@
 import { inject } from '@angular/core';
-import { environment } from '../../../environments/environment';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError } from 'rxjs';
+
+import { environment } from '../../../environments/environment';
 
 type CommonHttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 type RequestData = Record<string, any>;

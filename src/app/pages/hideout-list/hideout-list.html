@@ -1,18 +1,3 @@
-<!-- TODO: Move to own component -->
-<div class="filter-list">
-  <app-acms-chip-filter
-    [items]="hideoutMaps()"
-    label="Maps"
-    select-aria-label="Hideout map selection"
-  />
-
-  <app-acms-chip-filter
-    [items]="hideoutTags()"
-    label="Tags"
-    select-aria-label="Hideout tag selection"
-  />
-</div>
-
 @let _errors = errors();
 @let _loading = loading();
 @let _hideouts = hideouts();
@@ -29,6 +14,7 @@
 } @else if (!_hideouts) {
   <p>No hideouts available</p>
 } @else {
+  <app-hideout-list-filters [base-data]="filtersBaseData()" (updated)="updateFilters($event)" />
   <div class="hideout-list-container">
     <ul class="hideout-list">
       @for (hideout of hideouts(); track hideout.guid) {

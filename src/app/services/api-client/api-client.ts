@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
+import { map } from 'rxjs';
 
 import { HideoutMetadata } from '../../models/HideoutMetadata';
 import { BaseApiClient } from './api-client.base';
-import { map } from 'rxjs';
+import { HideoutListFiltersOutput } from '../../components/hideout-list-filters/hideout-list-filters';
 
-export interface PaginationOptions {
+export interface HideoutListOptions {
   page: number;
+  filters: HideoutListFiltersOutput;
 }
 
 interface GetHideoutListResponse {
@@ -28,9 +30,9 @@ interface GetHideoutPageCountResponse {
   providedIn: 'root',
 })
 export class ApiClient extends BaseApiClient {
-  getHideoutList(opts: PaginationOptions) {
+  getHideoutList({ page, filters }: HideoutListOptions) {
     return this.requestAPI<GetHideoutListResponse>('/hideout/list', {
-      params: { page: opts.page },
+      params: { page, filters: JSON.stringify(filters) },
     }).pipe(map((v) => v.list));
   }
 
