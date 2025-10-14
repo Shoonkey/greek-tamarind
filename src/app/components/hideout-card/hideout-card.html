@@ -1,13 +1,24 @@
 @let _hideout = hideout();
-@let _selectedImg = selectedImg();
-@let _remainingImgs = remainingImgs();
+@let _images = _hideout.images;
+@let _selectedImg = _images[selectedImgIdx()];
+
 <div class="hideout-card">
-  <div class="image-gallery">
+  <div class="img-gallery">
+    <ul class="miniature-list">
+      @for (img of _images; let idx = $index; track $index) {
+        <li>
+          <img
+            (click)="selectedImgIdx.set(idx)"
+            [src]="img.src"
+            [alt]="img.alt"
+            class="miniature-img"
+          />
+        </li>
+      }
+    </ul>
     <a [routerLink]="`/hideout/${_hideout.guid}`">
-      <img [src]="_selectedImg.src" [alt]="_selectedImg.alt" />
+      <img class="selected-img" [src]="_selectedImg.src" [alt]="_selectedImg.alt" />
     </a>
-    <!-- TODO: Add remaining images as small images on the bottom right so the user can change between screenshots -->
-    @for (img of _remainingImgs; track $index) {}
   </div>
   <div class="info-container">
     <p class="map-name">{{ _hideout.map }}</p>

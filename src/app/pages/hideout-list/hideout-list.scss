@@ -8,35 +8,29 @@
   );
 
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 0.5rem;
   height: 100%;
 
-  --items-per-line: 0;
+  --items-per-line: 1;
   --items-per-page: 0;
 }
 
-.hideout-list-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  margin-top: 0.5rem;
-}
-
-// TODO: Figure out how to prevent this list from growing bigger than the page
 ul.hideout-list {
+  list-style-type: none;
+
   --line-count: calc(var(--items-per-page) / var(--items-per-line));
 
+  overflow: auto;
+
   display: grid;
-  list-style-type: none;
-  grid-template-rows: repeat(var(--line-count), 1fr);
+  grid-template-rows: repeat(var(--line-count), minmax(0, 1fr));
   grid-template-columns: repeat(var(--items-per-line), 1fr);
-  justify-content: start;
   gap: 1rem;
 
-  .hideout-item {
-    max-width: 100%;
-    margin-inline: auto;
-  }
+  // li.hideout-item {
+  //   margin-inline: auto;
+  // }
 }
 
 .search-btn {

@@ -1,6 +1,7 @@
 import { Component, computed, ElementRef, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { debounce, finalize, forkJoin, interval, Observable, Subscription } from 'rxjs';
 import { MatButton } from '@angular/material/button';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 import {
   ApiClient,
@@ -15,10 +16,18 @@ import {
   HideoutFiltersBaseData,
   HideoutListFilters,
 } from '../../components/hideout-list-filters/hideout-list-filters';
+import { MatChip } from '@angular/material/chips';
 
 @Component({
   selector: 'app-hideout-list',
-  imports: [HideoutCard, PaginationControl, HideoutListFilters, MatButton],
+  imports: [
+    HideoutCard,
+    PaginationControl,
+    HideoutListFilters,
+    MatButton,
+    MatExpansionModule,
+    MatChip,
+  ],
   templateUrl: './hideout-list.html',
   styleUrl: './hideout-list.scss',
 })
@@ -227,15 +236,15 @@ export class HideoutList implements OnInit, OnDestroy {
 
     const nextServerPage = this.currentServerPage() + 1;
 
-    if (standalone && nextServerPage < this.serverPageCount()) {
-      this.loggingService.logError(
-        "Can't load more hideout because there are no record pages available",
-      );
+    // if (standalone && nextServerPage < this.serverPageCount()) {
+    //   this.loggingService.logError(
+    //     "Can't load more hideout because there are no record pages available",
+    //   );
 
-      return new Observable<GetHideoutListResponse>((subscriber) =>
-        subscriber.next({ list: [], matchCount: 0 }),
-      );
-    }
+    //   return new Observable<GetHideoutListResponse>((subscriber) =>
+    //     subscriber.next({ list: [], matchCount: 0 }),
+    //   );
+    // }
 
     const observable = this.apiClient.getHideoutList({
       page: nextServerPage,
