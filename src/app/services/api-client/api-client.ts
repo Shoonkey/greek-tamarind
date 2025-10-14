@@ -18,20 +18,20 @@ export interface HideoutListOptions {
   filters: HideoutListFiltersInput;
 }
 
-interface GetHideoutListResponse {
+export interface GetHideoutListResponse {
   list: HideoutMetadata[];
   matchCount: number;
 }
 
-interface GetHideoutMapsResponse {
+export interface GetHideoutMapsResponse {
   maps: any;
 }
 
-interface GetHideoutTagsResponse {
+export interface GetHideoutTagsResponse {
   tags: string[];
 }
 
-interface GetHideoutPageCountResponse {
+export interface GetHideoutPageCountResponse {
   itemsPerPage: number;
   itemCount: number;
 }

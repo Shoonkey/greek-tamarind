@@ -3,6 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
+import { LoggingService } from '../logging-service/logging-service';
 
 type CommonHttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 type RequestData = Record<string, any>;
@@ -26,6 +27,7 @@ interface RequestConfig {
 
 export abstract class BaseApiClient {
   protected http = inject(HttpClient);
+  private loggingService = inject(LoggingService);
 
   private apiURL = environment.apiURL;
 
@@ -52,12 +54,6 @@ export abstract class BaseApiClient {
     }
   }
 
-  private logError(...e: any[]) {
-    if (environment.production) return;
-
-    console.error('An API client request failed.', ...e);
-  }
-
   protected requestAPI<T>(endpoint: string, config: RequestConfig = {}) {
     const { method = 'GET', params, body } = config;
 
@@ -71,12 +67,16 @@ export abstract class BaseApiClient {
       })
       .pipe(
         catchError(({ status, error: response }: HttpErrorResponse) => {
-          this.logError(response.errorCode);
-
           let errorMsg;
 
           if (status === 0) errorMsg = this.getClientErrorMsg(ClientErrorCode.REQUEST_TIMED_OUT);
           else errorMsg = this.getApiErrorMsg(response.errorCode as ApiErrorCode);
+
+          this.loggingService.logError(
+            'An API client request failed.',
+            `Error code: ${response.errorCode}`,
+            `Message: ${errorMsg}`,
+          );
 
           throw new Error(errorMsg);
         }),

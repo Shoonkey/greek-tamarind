@@ -1,17 +1,13 @@
-@let _hideouts = currentPageHideouts();
-@let _loading = loading();
 @let _errors = errors();
 
-@if (_loading) {
-  <p>Loading...</p>
+@if (loadingPage()) {
+  <p>Loading filters and list...</p>
 } @else if (_errors.length > 0) {
   <div class="error-list">
     @for (err of _errors; track $index) {
       <p class="error">{{ err }}</p>
     }
   </div>
-} @else if (!_hideouts) {
-  <p>No hideouts available</p>
 } @else {
   <form (submit)="performSearch($event)">
     <app-hideout-list-filters
@@ -21,16 +17,25 @@
     />
     <button class="search-btn" matButton="filled" type="submit">Search</button>
   </form>
-  <div class="hideout-list-container">
-    <ul class="hideout-list">
-      @for (hideout of _hideouts; track hideout.guid) {
-        <li class="hideout-item"><app-hideout-card [hideout]="hideout" /></li>
-      }
-    </ul>
-    <app-pagination-control
-      [currentPage]="currentClientPage()"
-      (pageChanged)="handlePageChange($event)"
-      [totalPages]="clientPageCount()"
-    />
-  </div>
+
+  @if (!loadingList()) {
+    @let _hideouts = clientHideoutList();
+
+    @if (!_hideouts) {
+      <p>No hideouts available</p>
+    } @else {
+      <div class="hideout-list-container">
+        <ul class="hideout-list">
+          @for (hideout of _hideouts; track hideout.guid) {
+            <li class="hideout-item"><app-hideout-card [hideout]="hideout" /></li>
+          }
+        </ul>
+        <app-pagination-control
+          [currentPage]="currentClientPage()"
+          (pageChanged)="handlePageChange($event)"
+          [totalPages]="clientPageCount()"
+        />
+      </div>
+    }
+  }
 }

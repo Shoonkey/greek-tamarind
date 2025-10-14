@@ -2,7 +2,12 @@ import { Component, computed, ElementRef, inject, OnDestroy, OnInit, signal } fr
 import { debounce, finalize, forkJoin, interval, Observable, Subscription } from 'rxjs';
 import { MatButton } from '@angular/material/button';
 
-import { ApiClient, HideoutListFiltersInput } from '../../services/api-client/api-client';
+import {
+  ApiClient,
+  GetHideoutListResponse,
+  HideoutListFiltersInput,
+} from '../../services/api-client/api-client';
+import { LoggingService } from '../../services/logging-service/logging-service';
 import { HideoutMetadata } from '../../models/HideoutMetadata';
 import { HideoutCard } from '../../components/hideout-card/hideout-card';
 import { PaginationControl } from '../../components/pagination-control/pagination-control';
@@ -20,6 +25,7 @@ import {
 export class HideoutList implements OnInit, OnDestroy {
   resizeSubscription!: Subscription;
 
+  loggingService = inject(LoggingService);
   apiClient = inject(ApiClient);
   eltRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
@@ -35,7 +41,8 @@ export class HideoutList implements OnInit, OnDestroy {
   currentClientPage = signal<number>(1);
   clientItemsPerPage = signal<number | null>(null);
 
-  loading = signal<boolean>(false);
+  loadingPage = signal<boolean>(false);
+  loadingList = signal<boolean>(false);
   errors = signal<string[]>([]);
 
   filtersBaseData = computed<HideoutFiltersBaseData>(() => ({
@@ -43,26 +50,27 @@ export class HideoutList implements OnInit, OnDestroy {
     tags: this.hideoutTags(),
   }));
 
-  currentPageHideouts = computed<HideoutMetadata[]>(() => {
-    const currentPage = this.currentServerPage();
-    const hideouts = this.loadedHideouts();
-    const clientItemsPerPage = this.clientItemsPerPage();
-
-    if (!clientItemsPerPage) return [];
-
-    const startAt = (currentPage - 1) * clientItemsPerPage;
-    const endAt = Math.min(startAt + clientItemsPerPage, hideouts.length);
-
-    return hideouts.slice(startAt, endAt);
+  clientHideoutList = computed<HideoutMetadata[]>(() => {
+    const { startAt, endAt } = this.getClientListLimits();
+    return this.loadedHideouts().slice(startAt, endAt);
   });
 
   clientPageCount = computed<number>(() => {
     const clientItemsPerPage = this.clientItemsPerPage();
-    const itemCount = this.serverItemCount();
+    const serverItemCount = this.serverItemCount();
 
-    if (!clientItemsPerPage || !itemCount) return 1;
+    if (!clientItemsPerPage || !serverItemCount) return 1;
 
-    return Math.ceil(itemCount / clientItemsPerPage);
+    return Math.ceil(serverItemCount / clientItemsPerPage);
+  });
+
+  serverPageCount = computed<number>(() => {
+    const serverItemCount = this.serverItemCount();
+    const serverItemsPerPage = this.serverItemsPerPage();
+
+    if (!serverItemsPerPage || !serverItemCount) return 1;
+
+    return Math.ceil(serverItemCount / serverItemsPerPage);
   });
 
   ngOnInit() {
@@ -84,19 +92,47 @@ export class HideoutList implements OnInit, OnDestroy {
     this.filters.set(newFilters);
   }
 
-  nextPageNeedsData() {
-    // TODO: Does the client have enough cached products for the next page or does it need to call the server?
-    return true;
+  getClientListLimits() {
+    const currentPage = this.currentClientPage();
+    const hideouts = this.loadedHideouts();
+    const clientItemsPerPage = this.clientItemsPerPage();
+
+    if (!clientItemsPerPage) return { startAt: 0, endAt: 0 };
+
+    const startAt = (currentPage - 1) * clientItemsPerPage;
+    const endAt = Math.min(startAt + clientItemsPerPage, hideouts.length);
+
+    return { startAt, endAt };
+  }
+
+  pageRequiresMoreData(page: number) {
+    const currentClientPage = this.currentClientPage();
+    const serverItemCount = this.serverItemCount();
+    const serverItemsPerPage = this.serverItemsPerPage();
+
+    if (currentClientPage > page || !serverItemCount || !serverItemsPerPage) return false;
+
+    const serverPage = this.currentServerPage();
+    const serverPageCount = this.serverPageCount();
+
+    const list = this.loadedHideouts();
+    const { endAt } = this.getClientListLimits();
+
+    return !list[endAt - 1] && serverPage < serverPageCount;
   }
 
   handlePageChange(newClientPage: number) {
-    this.currentClientPage.set(newClientPage);
+    if (this.pageRequiresMoreData(newClientPage)) {
+      this.loggingService.logInfo('Page requires more data! Loading more hideouts.');
+      this.loadHideouts();
+    }
 
-    // if (this.nextPageNeedsData())
-    this.loadHideouts();
+    this.currentClientPage.set(newClientPage);
   }
 
   updateLayoutFromWidth(width: number) {
+    this.loggingService.logInfo('Updating layout based on window width...');
+
     if (width >= 1200) {
       this.setLayoutVariables({
         itemsPerLine: 3,
@@ -113,36 +149,45 @@ export class HideoutList implements OnInit, OnDestroy {
         itemsPerPage: 2,
       });
     }
+
+    this.handlePageChange(this.currentClientPage());
   }
 
   setLayoutVariables(opts: { itemsPerLine: number; itemsPerPage: number }) {
     if (!this.eltRef) return;
 
+    const { itemsPerLine, itemsPerPage } = opts;
     const elt = this.eltRef.nativeElement;
-    elt.style.setProperty('--items-per-line', opts.itemsPerLine.toString());
-    elt.style.setProperty('--items-per-page', opts.itemsPerPage.toString());
+    elt.style.setProperty('--items-per-line', itemsPerLine.toString());
+    elt.style.setProperty('--items-per-page', itemsPerPage.toString());
 
-    this.clientItemsPerPage.set(opts.itemsPerPage);
+    this.loggingService.logInfo(
+      `Layout set to ${itemsPerLine} items per line and ${itemsPerPage} items per page`,
+    );
+
+    this.clientItemsPerPage.set(itemsPerPage);
   }
 
   performSearch(e: SubmitEvent) {
     e.preventDefault();
     this.currentServerPage.set(1);
-    this.loadHideouts();
+    this.loadHideouts({ freshList: true });
   }
 
-  // `callback` runs 500ms after the layout stops being resized
+  // `callback` runs `intervalMs` milliseconds after the layout stops being resized
   subscribeToResizeEvent(element: HTMLElement, callback: (entries: ResizeObserverEntry[]) => void) {
+    const intervalMs = 300;
+
     const observable = new Observable<ResizeObserverEntry[]>((subscriber) => {
       const observer = new ResizeObserver((entries) => subscriber.next(entries));
       observer.observe(element);
 
-      return () => {
-        observer.disconnect();
-      };
+      return () => observer.disconnect();
     });
 
-    this.resizeSubscription = observable.pipe(debounce(() => interval(500))).subscribe(callback);
+    this.resizeSubscription = observable
+      .pipe(debounce(() => interval(intervalMs)))
+      .subscribe(callback);
   }
 
   unsubscribeToResizeEvent() {
@@ -152,7 +197,7 @@ export class HideoutList implements OnInit, OnDestroy {
   loadPageData() {
     const api = this.apiClient;
 
-    this.startLoading();
+    this.loadingPage.set(true);
 
     return forkJoin({
       pagination: api.getHideoutPaginationData(),
@@ -160,9 +205,10 @@ export class HideoutList implements OnInit, OnDestroy {
       maps: api.getHideoutMaps(),
       hideoutResponse: this.loadHideouts({ standalone: false }),
     })
-      .pipe(finalize(() => this.finishLoading()))
+      .pipe(finalize(() => this.loadingPage.set(false)))
       .subscribe({
         next: ({ pagination, tags, maps, hideoutResponse }) => {
+          this.serverItemsPerPage.set(pagination.itemsPerPage);
           this.serverItemCount.set(pagination.itemCount);
           this.hideoutTags.set(tags);
           this.hideoutMaps.set(maps);
@@ -174,25 +220,50 @@ export class HideoutList implements OnInit, OnDestroy {
       });
   }
 
-  loadHideouts(opts: { standalone?: boolean } = {}) {
-    const { standalone = true } = opts;
+  loadHideouts(opts: { standalone?: boolean; freshList?: boolean } = {}) {
+    const { standalone = true, freshList = false } = opts;
 
-    if (standalone) this.startLoading();
+    if (standalone) this.startLoadingHideouts();
+
+    const nextServerPage = this.currentServerPage() + 1;
+
+    if (standalone && nextServerPage < this.serverPageCount()) {
+      this.loggingService.logError(
+        "Can't load more hideout because there are no record pages available",
+      );
+
+      return new Observable<GetHideoutListResponse>((subscriber) =>
+        subscriber.next({ list: [], matchCount: 0 }),
+      );
+    }
 
     const observable = this.apiClient.getHideoutList({
-      page: this.currentServerPage(),
+      page: nextServerPage,
       filters: this.filters(),
     });
 
     if (standalone)
-      observable.pipe(finalize(() => this.finishLoading())).subscribe({
-        next: (hideoutResponse) => {
-          const { list, matchCount } = hideoutResponse;
-          this.loadedHideouts.update((hdts) => [...hdts, ...list]);
-          this.serverItemCount.set(matchCount);
-        },
-        error: (err) => this.addError(err),
-      });
+      observable
+        .pipe(
+          finalize(() => {
+            this.currentServerPage.set(nextServerPage);
+            this.finishLoadingHideouts();
+          }),
+        )
+        .subscribe({
+          next: (hideoutResponse) => {
+            const { list, matchCount } = hideoutResponse;
+
+            this.serverItemCount.set(matchCount);
+
+            if (freshList) {
+              this.loadedHideouts.set(list);
+            } else {
+              this.loadedHideouts.update((hdts) => [...hdts, ...list]);
+            }
+          },
+          error: (err) => this.addError(err),
+        });
 
     return observable;
   }
@@ -205,12 +276,12 @@ export class HideoutList implements OnInit, OnDestroy {
     this.errors.set([]);
   }
 
-  startLoading() {
-    this.loading.set(true);
+  startLoadingHideouts() {
+    this.loadingList.set(true);
     this.clearErrors();
   }
 
-  finishLoading() {
-    this.loading.set(false);
+  finishLoadingHideouts() {
+    this.loadingList.set(false);
   }
 }
