@@ -38,7 +38,7 @@ export class AcmsChipFilter {
 
   query = signal<string>('');
 
-  value = input<string[] | null>();
+  value = input.required<string[] | null>();
   change = output<string[] | null>();
 
   filteredItems = computed<ACMSOption[]>(() => {

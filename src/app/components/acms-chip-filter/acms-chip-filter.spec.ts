@@ -21,6 +21,7 @@ describe('AcmsChipFilter', () => {
     componentRef.setInput('items', []);
     componentRef.setInput('label', 'Filter');
     componentRef.setInput('select-aria-label', 'Option selection');
+    componentRef.setInput('value', null);
 
     await fixture.whenStable();
   });
