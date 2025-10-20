@@ -1,14 +1,16 @@
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs';
 
-import { HideoutMetadata } from '../../models/HideoutMetadata';
-import { PoeVersion } from '../../models/PoeVersion';
 import { BaseApiClient } from './api-client.base';
+import { HideoutListItem } from '../../models/HideoutListItem';
+import { PoeVersion } from '../../models/PoeVersion';
+import { HideoutMap } from '../../models/HideoutMap';
+import { HideoutTag } from '../../models/HideoutTag';
 
 export interface HideoutListFiltersInput {
   poeVersion?: PoeVersion;
   hasMTX?: boolean;
-  title?: string;
+  name?: string;
   maps?: string[];
   tags?: string[];
 }
@@ -19,16 +21,16 @@ export interface HideoutListOptions {
 }
 
 export interface GetHideoutListResponse {
-  list: HideoutMetadata[];
-  matchCount: number;
+  items: HideoutListItem[];
+  totalCount: number;
 }
 
 export interface GetHideoutMapsResponse {
-  maps: any;
+  maps: HideoutMap[];
 }
 
 export interface GetHideoutTagsResponse {
-  tags: string[];
+  tags: HideoutTag[];
 }
 
 export interface GetHideoutPageCountResponse {
@@ -42,7 +44,7 @@ export interface GetHideoutPageCountResponse {
 export class ApiClient extends BaseApiClient {
   getHideoutList({ page, filters }: HideoutListOptions) {
     return this.requestAPI<GetHideoutListResponse>('/hideout/list', {
-      params: { page, filters: filters ? JSON.stringify(filters) : null },
+      params: { page, ...filters },
     });
   }
 

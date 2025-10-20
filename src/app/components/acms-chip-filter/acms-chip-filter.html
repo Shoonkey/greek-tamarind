@@ -10,7 +10,7 @@
         [matBadgeHidden]="extraItemsCount === 0"
         [matBadgeDescription]="getSelectionBadgeDescription(extraItemsCount)"
       >
-        {{ firstSelectedItem }}
+        {{ firstSelectedItem.label }}
       </mat-chip-row>
     }
   </mat-chip-grid>
@@ -28,10 +28,10 @@
     [hideSingleSelectionIndicator]="true"
   >
     @let list = filteredItems();
-    @for (item of list; track item) {
-      @let isSelected = isItemSelected(item);
-      <mat-option [value]="item">
-        {{ item }}
+    @for (item of list; track item.value) {
+      @let isSelected = isItemSelected(item.value);
+      <mat-option [value]="item.value">
+        {{ item.label }}
         <mat-icon [class.selected]="isSelected">
           {{ isSelected ? 'check_circle' : 'circle' }}
         </mat-icon>

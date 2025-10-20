@@ -7,7 +7,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 import { ApiClient, HideoutListFiltersInput } from '../../services/api-client/api-client';
 import { LoggingService } from '../../services/logging-service/logging-service';
-import { HideoutMetadata } from '../../models/HideoutMetadata';
+import { HideoutListItem } from '../../models/HideoutListItem';
 import { HideoutCard } from '../../components/hideout-card/hideout-card';
 import { PaginationControl } from '../../components/pagination-control/pagination-control';
 import {
@@ -15,6 +15,8 @@ import {
   HideoutFiltersDialog,
 } from '../../components/hideout-filters-dialog/hideout-filters-dialog';
 import { KeyboardShortcutListener } from '../../services/keyboard-shortcut-listener/keyboard-shortcut-listener';
+import { HideoutMap } from '../../models/HideoutMap';
+import { HideoutTag } from '../../models/HideoutTag';
 
 @Component({
   selector: 'app-hideout-list',
@@ -32,9 +34,9 @@ export class HideoutList implements OnInit, OnDestroy {
   keyboardShortcutListener = inject(KeyboardShortcutListener);
   eltRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
-  hideoutTags = signal<string[]>([]);
-  hideoutMaps = signal<string[]>([]);
-  loadedHideouts = signal<HideoutMetadata[]>([]);
+  hideoutTags = signal<HideoutMap[]>([]);
+  hideoutMaps = signal<HideoutTag[]>([]);
+  loadedHideouts = signal<HideoutListItem[]>([]);
   filters = signal<HideoutListFiltersInput>({});
 
   currentServerPage = signal<number>(1);
@@ -53,7 +55,7 @@ export class HideoutList implements OnInit, OnDestroy {
     tags: this.hideoutTags(),
   }));
 
-  clientHideoutList = computed<HideoutMetadata[]>(() => {
+  clientHideoutList = computed<HideoutListItem[]>(() => {
     const { startAt, endAt } = this.getClientListLimits();
     return this.loadedHideouts().slice(startAt, endAt);
   });
@@ -237,12 +239,13 @@ export class HideoutList implements OnInit, OnDestroy {
       .subscribe({
         next: ({ pagination, tags, maps, hideoutResponse }) => {
           this.serverItemsPerPage.set(pagination.itemsPerPage);
-          this.serverItemCount.set(pagination.itemCount);
           this.hideoutTags.set(tags);
           this.hideoutMaps.set(maps);
 
-          const { list } = hideoutResponse;
-          this.loadedHideouts.update((hdts) => [...hdts, ...list]);
+          const { items, totalCount } = hideoutResponse;
+          this.serverItemCount.set(totalCount);
+
+          this.loadedHideouts.update((hdts) => [...hdts, ...items]);
         },
         error: (err) => this.addError(err),
       });
@@ -280,16 +283,16 @@ export class HideoutList implements OnInit, OnDestroy {
         )
         .subscribe({
           next: (hideoutResponse) => {
-            const { list, matchCount } = hideoutResponse;
+            const { items, totalCount } = hideoutResponse;
 
-            this.serverItemCount.set(matchCount);
+            this.serverItemCount.set(totalCount);
 
             if (freshList) {
               this.currentServerPage.set(1);
               this.currentClientPage.set(1);
-              this.loadedHideouts.set(list);
+              this.loadedHideouts.set(items);
             } else {
-              this.loadedHideouts.update((hdts) => [...hdts, ...list]);
+              this.loadedHideouts.update((hdts) => [...hdts, ...items]);
             }
           },
           error: (err) => this.addError(err),

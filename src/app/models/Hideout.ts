@@ -1,23 +1,25 @@
 import { HideoutChangelogHistory } from './HideoutChangelogHistory';
 import { HideoutImage } from './HideoutImage';
+import { HideoutMap } from './HideoutMap';
+import { HideoutTag } from './HideoutTag';
 import { PoeVersion } from './PoeVersion';
 
 export interface Hideout {
-  guid: string;
+  id: string;
   name: string;
   poeVersion: PoeVersion;
   rating: number;
-  map: string;
-  images: HideoutImage[];
-  publishedAt: string;
-  lastUpdatedAt: string;
-  authorUsername: string;
+  map: HideoutMap;
+  imageUrls: string[];
+  // images: HideoutImage[];
+  createdAt: string;
+  updatedAt: string;
+  author: string;
   timesDownloaded: number;
   commentCount: number;
   timesFavorited: number;
-  music: string | null;
   description: string | null;
-  tags: string[];
+  tags: HideoutTag[];
   hasMTX: boolean;
   changelogHistory: HideoutChangelogHistory[];
 }

@@ -11,7 +11,7 @@
 } @else {
   <div>
     @let _hideouts = clientHideoutList();
-    @if (!loadingList() && _hideouts.length > 0) {
+    @if (!loadingList()) {
       <div class="btn-area">
         <button
           matButton
@@ -24,16 +24,20 @@
         </button>
         <span class="kbd-shortcut"><kbd>Ctrl</kbd> + <kbd>K</kbd></span>
       </div>
-      <ul class="hideout-list">
-        @for (hideout of _hideouts; track hideout.guid) {
-          <li class="hideout-item"><app-hideout-card [hideout]="hideout" /></li>
-        }
-      </ul>
-      <app-pagination-control
-        [currentPage]="currentClientPage()"
-        (pageChanged)="handlePageChange($event)"
-        [totalPages]="clientPageCount()"
-      />
+      @if (_hideouts.length > 0) {
+        <ul class="hideout-list">
+          @for (hideout of _hideouts; track hideout.id) {
+            <li class="hideout-item"><app-hideout-card [hideout]="hideout" /></li>
+          }
+        </ul>
+        <app-pagination-control
+          [currentPage]="currentClientPage()"
+          (pageChanged)="handlePageChange($event)"
+          [totalPages]="clientPageCount()"
+        />
+      } @else {
+        <p>No hideouts match the filters.</p>
+      }
     }
   </div>
 }

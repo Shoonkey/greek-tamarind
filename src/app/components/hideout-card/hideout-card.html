@@ -1,27 +1,29 @@
 @let _hideout = hideout();
-@let _images = _hideout.images;
+<!-- @let _images = _hideout.images; -->
+@let _images = _hideout.imageUrls;
 @let _selectedImg = _images[selectedImgIdx()];
 
 <div class="hideout-card">
   <div class="img-gallery">
     <ul class="miniature-list">
       @for (img of _images; let idx = $index; track $index) {
+        <!-- TODO: Add .src and .alt back once images are sent fully from the API -->
         <li>
           <img
             (click)="selectedImgIdx.set(idx)"
-            [src]="img.src"
-            [alt]="img.alt"
+            [src]="img"
+            [alt]="`Hideout image #${idx}`"
             class="miniature-img"
           />
         </li>
       }
     </ul>
-    <a [routerLink]="`/hideout/${_hideout.guid}`">
-      <img class="selected-img" [src]="_selectedImg.src" [alt]="_selectedImg.alt" />
+    <a [routerLink]="`/hideout/${_hideout.id}`">
+      <img class="selected-img" [src]="_selectedImg" [alt]="_selectedImg" />
     </a>
   </div>
   <div class="info-container">
-    <p class="map-name">{{ _hideout.map }}</p>
+    <p class="map-name">{{ _hideout.map.name }}</p>
     <div class="short-info-group">
       <p>POE {{ _hideout.poeVersion }}</p>
       <p>{{ _hideout.rating }}/5</p>

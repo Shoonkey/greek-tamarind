@@ -11,6 +11,11 @@ import { MatIcon } from '@angular/material/icon';
 
 // TODO(issue): Fix menu closing automatically on option selection
 
+interface ACMSOption {
+  label: string;
+  value: string;
+}
+
 // autocomplete multiselect chip filter
 @Component({
   selector: 'app-acms-chip-filter',
@@ -26,39 +31,57 @@ import { MatIcon } from '@angular/material/icon';
   styleUrl: './acms-chip-filter.scss',
 })
 export class AcmsChipFilter {
-  items = input.required<string[]>();
+  items = input.required<ACMSOption[]>();
   label = input.required<string>();
   selectAriaLabel = input.required<string>({ alias: 'select-aria-label' });
   inputPlaceholder = input<string>('');
 
   query = signal<string>('');
-  selectedItems = signal<string[]>([]);
 
-  updated = output<string[] | null>();
+  value = input<string[] | null>();
+  change = output<string[] | null>();
 
-  isActive = computed<boolean>(() => this.selectedItems().length > 0);
-  filteredItems = computed<string[]>(() => {
+  filteredItems = computed<ACMSOption[]>(() => {
     const items = this.items();
     const query = this.query();
 
     return this.getFilteredItems(items, query);
   });
 
-  getFilteredItems(items: string[], query: string) {
+  selectedItems = computed<ACMSOption[]>(() => {
+    const _value = this.value();
+    const _items = this.items();
+
+    if (!_value) return [];
+
+    const selected: ACMSOption[] = [];
+
+    for (const id of _value) {
+      const equivalentItem = _items.find((i) => i.value === id);
+
+      if (equivalentItem) selected.push(equivalentItem);
+    }
+
+    return selected;
+  });
+
+  isActive = computed<boolean>(() => this.selectedItems().length > 0);
+
+  getFilteredItems(items: ACMSOption[], query: string) {
     const lowerCaseQuery = query.toLowerCase();
 
     if (!lowerCaseQuery) return items;
 
     const queryMatchingItems = items.filter((item) => {
-      return item.toLowerCase().includes(lowerCaseQuery);
+      return item.label.toLowerCase().includes(lowerCaseQuery);
     });
 
     return queryMatchingItems;
   }
 
-  isItemSelected(item: string) {
+  isItemSelected(value: string) {
     const list = this.selectedItems();
-    return list.includes(item);
+    return list.find((item) => item.value === value);
   }
 
   getSelectionBadgeDescription(count: number) {
@@ -75,16 +98,14 @@ export class AcmsChipFilter {
   handleSelection({ option }: MatAutocompleteSelectedEvent) {
     this.query.set('');
 
-    this.selectedItems.update((_selected) => {
-      if (this.isItemSelected(option.viewValue)) {
-        const idx = _selected.findIndex((item) => item === option.viewValue);
-        return _selected.toSpliced(idx, 1);
-      }
+    const selected = this.value() || [];
 
-      return [..._selected, option.viewValue];
-    });
+    if (this.isItemSelected(option.value)) {
+      const idx = selected.findIndex((item) => item === option.value);
+      this.change.emit(selected.toSpliced(idx, 1));
+      return;
+    }
 
-    const selected = this.selectedItems();
-    this.updated.emit(selected.length > 0 ? selected : null);
+    this.change.emit([...selected, option.value]);
   }
 }

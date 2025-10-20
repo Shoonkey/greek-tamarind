@@ -8,10 +8,12 @@ import { MatButton } from '@angular/material/button';
 import { AcmsChipFilter } from '../acms-chip-filter/acms-chip-filter';
 import { HideoutListFiltersInput } from '../../services/api-client/api-client';
 import { PoeVersion } from '../../models/PoeVersion';
+import { HideoutMap } from '../../models/HideoutMap';
+import { HideoutTag } from '../../models/HideoutTag';
 
 export interface HideoutFiltersBaseData {
-  maps: string[];
-  tags: string[];
+  maps: HideoutMap[];
+  tags: HideoutTag[];
 }
 
 export interface DialogData {
@@ -77,5 +79,13 @@ export class HideoutFiltersDialog {
   decodeMTX(filterValue?: boolean) {
     if (filterValue == undefined) return [0, 1];
     return [filterValue ? 1 : 0];
+  }
+
+  tagsToOptions(tags: HideoutTag[]) {
+    return tags.map((t) => ({ label: t.name, value: t.id }));
+  }
+
+  mapsToOptions(maps: HideoutMap[]) {
+    return maps.map((m) => ({ label: m.name, value: m.id }));
   }
 }

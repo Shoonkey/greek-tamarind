@@ -4,12 +4,12 @@
 <h1 mat-dialog-content>Filters</h1>
 <mat-dialog-content class="filter-dialog">
   <div class="row">
-    <mat-form-field class="title-field" subscriptSizing="dynamic">
-      <mat-label>Title</mat-label>
+    <mat-form-field class="name-field" subscriptSizing="dynamic">
+      <mat-label>Name</mat-label>
       <input
         matInput
-        [value]="_filters.title || ''"
-        (input)="updateFilter('title', $event.target.value === '' ? null : $event.target.value)"
+        [value]="_filters.name || ''"
+        (input)="updateFilter('name', $event.target.value === '' ? null : $event.target.value)"
       />
     </mat-form-field>
   </div>
@@ -41,16 +41,18 @@
   </div>
   <div class="row">
     <app-acms-chip-filter
-      [items]="_data.maps"
       label="Maps"
       select-aria-label="Hideout map selection"
-      (updated)="updateFilter('maps', $event)"
+      [items]="mapsToOptions(_data.maps)"
+      [value]="_filters.maps"
+      (change)="updateFilter('maps', $event)"
     />
     <app-acms-chip-filter
-      [items]="_data.tags"
       label="Tags"
       select-aria-label="Hideout tag selection"
-      (updated)="updateFilter('tags', $event)"
+      [items]="tagsToOptions(_data.tags)"
+      [value]="_filters.tags"
+      (change)="updateFilter('tags', $event)"
     />
   </div>
   <mat-dialog-actions>
