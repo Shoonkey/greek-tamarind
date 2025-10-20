@@ -1,9 +1,9 @@
-.filter-list {
+.filter-dialog {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 1rem;
 }
 
 .row {
@@ -14,15 +14,18 @@
   width: 100%;
 }
 
-.title-field {
-  width: 100vw;
-}
-
-.poe-version-field {
+.poe-version-field,
+.mtx-field {
   p {
     font-size: 0.8rem;
     text-align: center;
   }
+}
+
+.search-btn {
+  display: block;
+  margin-top: 0.5rem;
+  margin-block: auto;
 }
 
 ::ng-deep {

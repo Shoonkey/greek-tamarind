@@ -15,7 +15,7 @@ export interface HideoutListFiltersInput {
 
 export interface HideoutListOptions {
   page: number;
-  filters: HideoutListFiltersInput;
+  filters?: HideoutListFiltersInput;
 }
 
 export interface GetHideoutListResponse {
@@ -42,7 +42,7 @@ export interface GetHideoutPageCountResponse {
 export class ApiClient extends BaseApiClient {
   getHideoutList({ page, filters }: HideoutListOptions) {
     return this.requestAPI<GetHideoutListResponse>('/hideout/list', {
-      params: { page, filters: JSON.stringify(filters) },
+      params: { page, filters: filters ? JSON.stringify(filters) : null },
     });
   }
 

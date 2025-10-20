@@ -70,4 +70,19 @@
       )
     );
   }
+
+  kbd {
+    background-color: #2b2b2b;
+    color: #efae32;
+    border-radius: 3px;
+    border: 1px solid #ff9100;
+    box-shadow:
+      0 1px 1px #5a3b0010,
+      0 2px 0 0 #d69200e1 inset;
+    font-size: 0.75rem;
+    font-weight: bold;
+    line-height: 1;
+    padding: 2px 4px;
+    white-space: nowrap;
+  }
 }

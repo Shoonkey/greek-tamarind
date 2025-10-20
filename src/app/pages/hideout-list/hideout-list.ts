@@ -1,41 +1,35 @@
 import { Component, computed, ElementRef, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { debounce, finalize, forkJoin, interval, Observable, Subscription } from 'rxjs';
+import { MatIcon } from '@angular/material/icon';
+import { MatTooltip } from '@angular/material/tooltip';
 import { MatButton } from '@angular/material/button';
-import { MatExpansionModule } from '@angular/material/expansion';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
-import {
-  ApiClient,
-  GetHideoutListResponse,
-  HideoutListFiltersInput,
-} from '../../services/api-client/api-client';
+import { ApiClient, HideoutListFiltersInput } from '../../services/api-client/api-client';
 import { LoggingService } from '../../services/logging-service/logging-service';
 import { HideoutMetadata } from '../../models/HideoutMetadata';
 import { HideoutCard } from '../../components/hideout-card/hideout-card';
 import { PaginationControl } from '../../components/pagination-control/pagination-control';
 import {
   HideoutFiltersBaseData,
-  HideoutListFilters,
-} from '../../components/hideout-list-filters/hideout-list-filters';
-import { MatChip } from '@angular/material/chips';
+  HideoutFiltersDialog,
+} from '../../components/hideout-filters-dialog/hideout-filters-dialog';
+import { KeyboardShortcutListener } from '../../services/keyboard-shortcut-listener/keyboard-shortcut-listener';
 
 @Component({
   selector: 'app-hideout-list',
-  imports: [
-    HideoutCard,
-    PaginationControl,
-    HideoutListFilters,
-    MatButton,
-    MatExpansionModule,
-    MatChip,
-  ],
+  imports: [HideoutCard, PaginationControl, MatIcon, MatButton, MatTooltip],
   templateUrl: './hideout-list.html',
   styleUrl: './hideout-list.scss',
 })
 export class HideoutList implements OnInit, OnDestroy {
   resizeSubscription!: Subscription;
+  filterShortcutSubscription!: Subscription;
 
   loggingService = inject(LoggingService);
   apiClient = inject(ApiClient);
+  dialogManager = inject(MatDialog);
+  keyboardShortcutListener = inject(KeyboardShortcutListener);
   eltRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
   hideoutTags = signal<string[]>([]);
@@ -91,14 +85,13 @@ export class HideoutList implements OnInit, OnDestroy {
 
       this.updateLayoutFromWidth(width);
     });
+
+    this.setupFilterShortcut();
   }
 
   ngOnDestroy() {
-    this.unsubscribeToResizeEvent();
-  }
-
-  updateFilters(newFilters: HideoutListFiltersInput) {
-    this.filters.set(newFilters);
+    if (this.resizeSubscription) this.resizeSubscription.unsubscribe();
+    if (this.filterShortcutSubscription) this.filterShortcutSubscription.unsubscribe();
   }
 
   getClientListLimits() {
@@ -162,6 +155,16 @@ export class HideoutList implements OnInit, OnDestroy {
     this.handlePageChange(this.currentClientPage());
   }
 
+  setupFilterShortcut() {
+    this.keyboardShortcutListener.watch((ev) => {
+      if (!ev.ctrlKey || ev.key.toLowerCase() !== 'k') return;
+      if (this.dialogManager.openDialogs.length !== 0) return;
+
+      ev.preventDefault();
+      this.openFilterDialog();
+    });
+  }
+
   setLayoutVariables(opts: { itemsPerLine: number; itemsPerPage: number }) {
     if (!this.eltRef) return;
 
@@ -177,9 +180,25 @@ export class HideoutList implements OnInit, OnDestroy {
     this.clientItemsPerPage.set(itemsPerPage);
   }
 
-  performSearch(e: SubmitEvent) {
-    e.preventDefault();
+  openFilterDialog() {
+    const dialogRef: MatDialogRef<HideoutFiltersDialog, HideoutListFiltersInput> =
+      this.dialogManager.open(HideoutFiltersDialog, {
+        data: {
+          baseData: this.filtersBaseData(),
+          filters: this.filters(),
+        },
+      });
+
+    dialogRef.afterClosed().subscribe((newFilters) => {
+      if (!newFilters) return;
+      this.performSearch(newFilters);
+    });
+  }
+
+  performSearch(filters: HideoutListFiltersInput) {
     this.currentServerPage.set(1);
+    this.currentClientPage.set(1);
+    this.filters.set(filters);
     this.loadHideouts({ freshList: true });
   }
 
@@ -212,7 +231,7 @@ export class HideoutList implements OnInit, OnDestroy {
       pagination: api.getHideoutPaginationData(),
       tags: api.getHideoutTags(),
       maps: api.getHideoutMaps(),
-      hideoutResponse: this.loadHideouts({ standalone: false }),
+      hideoutResponse: this.loadHideouts({ standalone: false, freshList: true }),
     })
       .pipe(finalize(() => this.loadingPage.set(false)))
       .subscribe({
@@ -234,7 +253,7 @@ export class HideoutList implements OnInit, OnDestroy {
 
     if (standalone) this.startLoadingHideouts();
 
-    const nextServerPage = this.currentServerPage() + 1;
+    const serverPage = this.currentServerPage();
 
     // if (standalone && nextServerPage < this.serverPageCount()) {
     //   this.loggingService.logError(
@@ -247,7 +266,7 @@ export class HideoutList implements OnInit, OnDestroy {
     // }
 
     const observable = this.apiClient.getHideoutList({
-      page: nextServerPage,
+      page: freshList ? 1 : serverPage + 1,
       filters: this.filters(),
     });
 
@@ -255,7 +274,7 @@ export class HideoutList implements OnInit, OnDestroy {
       observable
         .pipe(
           finalize(() => {
-            this.currentServerPage.set(nextServerPage);
+            this.currentServerPage.set(serverPage);
             this.finishLoadingHideouts();
           }),
         )
@@ -266,6 +285,8 @@ export class HideoutList implements OnInit, OnDestroy {
             this.serverItemCount.set(matchCount);
 
             if (freshList) {
+              this.currentServerPage.set(1);
+              this.currentClientPage.set(1);
               this.loadedHideouts.set(list);
             } else {
               this.loadedHideouts.update((hdts) => [...hdts, ...list]);

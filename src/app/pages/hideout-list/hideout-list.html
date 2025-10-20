@@ -9,52 +9,31 @@
     }
   </div>
 } @else {
-  <mat-accordion style="margin: auto">
-    <mat-expansion-panel hideToggle>
-      <mat-expansion-panel-header>
-        <mat-panel-title>Filters</mat-panel-title>
-        <mat-panel-description
-          ><mat-chip [disabled]="true">3 active filters</mat-chip></mat-panel-description
+  <div>
+    @let _hideouts = clientHideoutList();
+    @if (!loadingList() && _hideouts.length > 0) {
+      <div class="btn-area">
+        <button
+          matButton
+          matTooltip="Open filters menu"
+          (click)="openFilterDialog()"
+          aria-keyshortcuts="Control+K"
         >
-      </mat-expansion-panel-header>
-      <form (submit)="performSearch($event)">
-        <app-hideout-list-filters
-          [base-data]="filtersBaseData()"
-          [filters]="filters()"
-          (updated)="updateFilters($event)"
-        />
-        <button class="search-btn" matButton="filled" type="submit">Search</button>
-      </form>
-    </mat-expansion-panel>
-    <mat-expansion-panel hideToggle expanded>
-      @let _hideouts = clientHideoutList();
-      <mat-expansion-panel-header>
-        <mat-panel-title>Results</mat-panel-title>
-        <mat-panel-description>
-          <mat-chip [disabled]="true">
-            @if (loadingList()) {
-              <span>Loading...</span>
-            } @else {
-              <span>{{ serverItemCount() }} hideouts found.</span>
-            }
-          </mat-chip>
-        </mat-panel-description>
-      </mat-expansion-panel-header>
-      <ng-template matExpansionPanelContent>
-        @if (!loadingList() && _hideouts.length > 0) {
-          <ul class="hideout-list">
-            @for (hideout of _hideouts; track hideout.guid) {
-              <li class="hideout-item"><app-hideout-card [hideout]="hideout" /></li>
-            }
-          </ul>
-
-          <app-pagination-control
-            [currentPage]="currentClientPage()"
-            (pageChanged)="handlePageChange($event)"
-            [totalPages]="clientPageCount()"
-          />
+          <mat-icon>tune</mat-icon>
+          Filters
+        </button>
+        <span class="kbd-shortcut"><kbd>Ctrl</kbd> + <kbd>K</kbd></span>
+      </div>
+      <ul class="hideout-list">
+        @for (hideout of _hideouts; track hideout.guid) {
+          <li class="hideout-item"><app-hideout-card [hideout]="hideout" /></li>
         }
-      </ng-template>
-    </mat-expansion-panel>
-  </mat-accordion>
+      </ul>
+      <app-pagination-control
+        [currentPage]="currentClientPage()"
+        (pageChanged)="handlePageChange($event)"
+        [totalPages]="clientPageCount()"
+      />
+    }
+  </div>
 }
