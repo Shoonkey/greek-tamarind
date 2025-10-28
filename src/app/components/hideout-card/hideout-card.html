@@ -23,11 +23,36 @@
     </a>
   </div>
   <div class="info-container">
-    <p class="map-name">{{ _hideout.map.name }}</p>
-    <div class="short-info-group">
-      <p>POE {{ _hideout.poeVersion }}</p>
-      <p>{{ _hideout.rating }}/5</p>
-      <p>MTX: {{ _hideout.hasMTX ? 'Yes' : 'No' }}</p>
+    <div class="row">
+      <p
+        class="user-hideout-name"
+        [matTooltip]="_hideout.name"
+        [matTooltipDisabled]="_hideout.name.length < 24"
+      >
+        {{ _hideout.name | truncate: 24 }}
+      </p>
+      <p class="author">
+        by <a [routerLink]="`/user/${_hideout.author}`">{{ _hideout.author }}</a>
+      </p>
+    </div>
+    <div class="row secondary-info">
+      <p class="map-name highlight">{{ _hideout.map.name }}</p>
+      <div class="short-info-group">
+        <p>
+          POE&nbsp;
+          <span class="highlight">{{ _hideout.poeVersion }}</span>
+        </p>
+        <p aria-label="Rating">
+          <mat-icon>star</mat-icon>
+          &nbsp;
+          <span class="highlight">{{ _hideout.rating }}</span>
+          /5
+        </p>
+        <p>
+          MTX:&nbsp;
+          <span class="highlight">{{ _hideout.hasMTX ? 'Yes' : 'No' }}</span>
+        </p>
+      </div>
     </div>
   </div>
 </div>

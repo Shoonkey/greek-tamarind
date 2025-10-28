@@ -16,7 +16,6 @@
     flex-direction: column;
     position: relative;
     height: stretch;
-    aspect-ratio: 16 / 9;
 
     ul.miniature-list {
       z-index: 1;
@@ -58,32 +57,67 @@
 
 .info-container {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 2rem;
-  padding-inline: 0.5rem;
+  flex-direction: column;
+  gap: 0.3rem;
 
-  font-size: 0.8rem;
-  font-weight: bold;
-  text-align: center;
-
-  .map-name {
-    color: var(--dark-highlight-color);
-  }
-
-  .short-info-group {
-    font-size: 0.8rem;
-    letter-spacing: 0.7px;
+  .row {
     display: flex;
-    gap: 0.4rem;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    padding-inline: 0.5rem;
 
-    p {
-      white-space: nowrap;
-      background: black;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-align: center;
+
+    &.secondary-info {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .user-hideout-name {
+      font-size: 1rem;
+      color: var(--dark-highlight-color);
+    }
+
+    .author {
+      font-size: 0.8rem;
+      letter-spacing: 1.2px;
+      font-weight: normal;
+
+      a {
+        color: var(--light-highlight-color);
+      }
+    }
+
+    .user-hideout-name,
+    .map-name {
+      letter-spacing: 0.8px;
+    }
+
+    .highlight {
       font-weight: bold;
-      border: solid var(--light-highlight-color) 1px;
-      padding: 2px 4px;
-      border-radius: 4px;
+      color: var(--light-highlight-color);
+    }
+
+    .short-info-group {
+      display: flex;
+      font-size: 0.8rem;
+      letter-spacing: 0.7px;
+      gap: 0.4rem;
+
+      p {
+        display: flex;
+
+        color: var(--text-secondary);
+        align-items: center;
+        white-space: nowrap;
+        background: black;
+        border: solid var(--light-highlight-color) 1px;
+        padding: 2px 4px;
+        border-radius: 4px;
+      }
     }
   }
 }
