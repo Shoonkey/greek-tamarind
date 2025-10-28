@@ -9,10 +9,10 @@
     }
   </div>
 } @else {
-  <div>
-    @let _hideouts = clientHideoutList();
-    @if (!loadingList()) {
-      <div class="btn-area">
+  @let _hideouts = clientHideoutList();
+  @if (!loadingList()) {
+    <div class="filter-area">
+      <div>
         <button
           matButton
           matTooltip="Open filters menu"
@@ -24,20 +24,31 @@
         </button>
         <span class="kbd-shortcut"><kbd>Ctrl</kbd> + <kbd>K</kbd></span>
       </div>
-      @if (_hideouts.length > 0) {
-        <ul class="hideout-list">
-          @for (hideout of _hideouts; track hideout.id) {
-            <li class="hideout-item"><app-hideout-card [hideout]="hideout" /></li>
-          }
-        </ul>
-        <app-pagination-control
-          [currentPage]="currentClientPage()"
-          (pageChanged)="handlePageChange($event)"
-          [totalPages]="clientPageCount()"
-        />
-      } @else {
-        <p>No hideouts match the filters.</p>
-      }
+      <div class="clear-btn-container">
+        @let _activeFiltersCount = activeFiltersCount();
+        @if (_activeFiltersCount) {
+          <p>
+            <span class="highlight">{{ activeFiltersCount() }}</span> active filters
+          </p>
+          <button mat-button (click)="clearFilters()">Clear</button>
+        } @else {
+          <p>No active filters</p>
+        }
+      </div>
+    </div>
+    @if (_hideouts.length > 0) {
+      <ul class="hideout-list">
+        @for (hideout of _hideouts; track hideout.id) {
+          <li class="hideout-item"><app-hideout-card [hideout]="hideout" /></li>
+        }
+      </ul>
+      <app-pagination-control
+        [currentPage]="currentClientPage()"
+        (pageChanged)="handlePageChange($event)"
+        [totalPages]="clientPageCount()"
+      />
+    } @else {
+      <p class="no-hideout-match">No hideouts match the filters.</p>
     }
-  </div>
+  }
 }

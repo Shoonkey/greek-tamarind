@@ -53,6 +53,11 @@ export class HideoutList implements OnInit, OnDestroy {
     tags: this.hideoutTags(),
   }));
 
+  activeFiltersCount = computed<number>(() => {
+    const filters = this.filters();
+    return Object.keys(filters).length;
+  });
+
   clientHideoutList = computed<HideoutListItem[]>(() => {
     const { startAt, endAt } = this.getClientListLimits();
     return this.loadedHideouts().slice(startAt, endAt);
@@ -305,6 +310,11 @@ export class HideoutList implements OnInit, OnDestroy {
 
   clearErrors() {
     this.errors.set([]);
+  }
+
+  clearFilters() {
+    this.filters.set({});
+    this.performSearch(this.filters());
   }
 
   startLoadingHideouts() {

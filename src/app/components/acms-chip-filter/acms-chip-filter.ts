@@ -97,14 +97,14 @@ export class AcmsChipFilter {
   handleSelection({ option }: MatAutocompleteSelectedEvent) {
     this.query.set('');
 
-    const selected = this.value() || [];
+    let selected = this.value() || [];
 
     if (this.isItemSelected(option.value)) {
       const idx = selected.findIndex((item) => item === option.value);
-      this.change.emit(selected.toSpliced(idx, 1));
-      return;
+      selected = selected.toSpliced(idx, 1);
+      this.change.emit(selected.length === 0 ? null : selected);
+    } else {
+      this.change.emit([...selected, option.value]);
     }
-
-    this.change.emit([...selected, option.value]);
   }
 }
