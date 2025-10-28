@@ -1,4 +1,4 @@
 export enum PoeVersion {
-  One,
+  One = 1,
   Two,
 }

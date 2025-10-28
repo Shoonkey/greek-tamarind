@@ -40,11 +40,9 @@ export class HideoutList implements OnInit, OnDestroy {
   filters = signal<HideoutListFiltersInput>({});
 
   currentServerPage = signal<number>(1);
-  serverItemCount = signal<number | null>(null);
-  serverItemsPerPage = signal<number | null>(null);
-
   currentClientPage = signal<number>(1);
-  clientItemsPerPage = signal<number | null>(null);
+  serverItemCount = signal<number | null>(null);
+  itemsPerPage = signal<number>(5);
 
   loadingPage = signal<boolean>(false);
   loadingList = signal<boolean>(false);
@@ -61,21 +59,21 @@ export class HideoutList implements OnInit, OnDestroy {
   });
 
   clientPageCount = computed<number>(() => {
-    const clientItemsPerPage = this.clientItemsPerPage();
+    const itemsPerPage = this.itemsPerPage();
     const serverItemCount = this.serverItemCount();
 
-    if (!clientItemsPerPage || !serverItemCount) return 1;
+    if (!itemsPerPage || !serverItemCount) return 1;
 
-    return Math.ceil(serverItemCount / clientItemsPerPage);
+    return Math.ceil(serverItemCount / itemsPerPage);
   });
 
   serverPageCount = computed<number>(() => {
     const serverItemCount = this.serverItemCount();
-    const serverItemsPerPage = this.serverItemsPerPage();
+    const itemsPerPage = this.itemsPerPage();
 
-    if (!serverItemsPerPage || !serverItemCount) return 1;
+    if (!itemsPerPage || !serverItemCount) return 1;
 
-    return Math.ceil(serverItemCount / serverItemsPerPage);
+    return Math.ceil(serverItemCount / itemsPerPage);
   });
 
   ngOnInit() {
@@ -99,12 +97,12 @@ export class HideoutList implements OnInit, OnDestroy {
   getClientListLimits() {
     const currentPage = this.currentClientPage();
     const hideouts = this.loadedHideouts();
-    const clientItemsPerPage = this.clientItemsPerPage();
+    const itemsPerPage = this.itemsPerPage();
 
-    if (!clientItemsPerPage) return { startAt: 0, endAt: 0 };
+    if (!itemsPerPage) return { startAt: 0, endAt: 0 };
 
-    const startAt = (currentPage - 1) * clientItemsPerPage;
-    const endAt = Math.min(startAt + clientItemsPerPage, hideouts.length);
+    const startAt = (currentPage - 1) * itemsPerPage;
+    const endAt = Math.min(startAt + itemsPerPage, hideouts.length);
 
     return { startAt, endAt };
   }
@@ -112,9 +110,9 @@ export class HideoutList implements OnInit, OnDestroy {
   pageRequiresMoreData(page: number) {
     const currentClientPage = this.currentClientPage();
     const serverItemCount = this.serverItemCount();
-    const serverItemsPerPage = this.serverItemsPerPage();
+    const itemsPerPage = this.itemsPerPage();
 
-    if (currentClientPage > page || !serverItemCount || !serverItemsPerPage) return false;
+    if (currentClientPage > page || !serverItemCount || !itemsPerPage) return false;
 
     const serverPage = this.currentServerPage();
     const serverPageCount = this.serverPageCount();
@@ -179,7 +177,7 @@ export class HideoutList implements OnInit, OnDestroy {
       `Layout set to ${itemsPerLine} items per line and ${itemsPerPage} items per page`,
     );
 
-    this.clientItemsPerPage.set(itemsPerPage);
+    this.itemsPerPage.set(itemsPerPage);
   }
 
   openFilterDialog() {
@@ -188,6 +186,8 @@ export class HideoutList implements OnInit, OnDestroy {
         data: {
           baseData: this.filtersBaseData(),
           filters: this.filters(),
+          maps: this.hideoutMaps(),
+          tags: this.hideoutTags(),
         },
       });
 
@@ -230,15 +230,13 @@ export class HideoutList implements OnInit, OnDestroy {
     this.loadingPage.set(true);
 
     return forkJoin({
-      pagination: api.getHideoutPaginationData(),
       tags: api.getHideoutTags(),
       maps: api.getHideoutMaps(),
       hideoutResponse: this.loadHideouts({ standalone: false, freshList: true }),
     })
       .pipe(finalize(() => this.loadingPage.set(false)))
       .subscribe({
-        next: ({ pagination, tags, maps, hideoutResponse }) => {
-          this.serverItemsPerPage.set(pagination.itemsPerPage);
+        next: ({ tags, maps, hideoutResponse }) => {
           this.hideoutTags.set(tags);
           this.hideoutMaps.set(maps);
 

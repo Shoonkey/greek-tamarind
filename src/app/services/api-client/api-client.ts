@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { map } from 'rxjs';
 
 import { BaseApiClient } from './api-client.base';
 import { HideoutListItem } from '../../models/HideoutListItem';
@@ -11,8 +10,8 @@ export interface HideoutListFiltersInput {
   poeVersion?: PoeVersion;
   hasMTX?: boolean;
   name?: string;
-  maps?: string[];
-  tags?: string[];
+  mapIds?: string[];
+  tagIds?: string[];
 }
 
 export interface HideoutListOptions {
@@ -23,19 +22,6 @@ export interface HideoutListOptions {
 export interface GetHideoutListResponse {
   items: HideoutListItem[];
   totalCount: number;
-}
-
-export interface GetHideoutMapsResponse {
-  maps: HideoutMap[];
-}
-
-export interface GetHideoutTagsResponse {
-  tags: HideoutTag[];
-}
-
-export interface GetHideoutPageCountResponse {
-  itemsPerPage: number;
-  itemCount: number;
 }
 
 @Injectable({
@@ -49,14 +35,10 @@ export class ApiClient extends BaseApiClient {
   }
 
   getHideoutMaps() {
-    return this.requestAPI<GetHideoutMapsResponse>('/hideout/maps').pipe(map((v) => v.maps));
+    return this.requestAPI<HideoutMap[]>('/hideout/maps');
   }
 
   getHideoutTags() {
-    return this.requestAPI<GetHideoutTagsResponse>('/hideout/tags').pipe(map((v) => v.tags));
-  }
-
-  getHideoutPaginationData() {
-    return this.requestAPI<GetHideoutPageCountResponse>('/hideout/pagination');
+    return this.requestAPI<HideoutTag[]>('/hideout/tags');
   }
 }

@@ -4,16 +4,10 @@ import { catchError } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import { LoggingService } from '../logging-service/logging-service';
+import { ApiErrorCode, getApiErrorMsg } from './api-errors';
 
 type CommonHttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 type RequestData = Record<string, any>;
-
-// TODO: Add all error codes possibly receivable from API
-export enum ApiErrorCode {
-  HIDEOUT_NOT_FOUND,
-  USER_NOT_FOUND,
-  UNAUTHORIZED_OPERATION,
-}
 
 enum ClientErrorCode {
   REQUEST_TIMED_OUT,
@@ -40,20 +34,6 @@ export abstract class BaseApiClient {
     }
   }
 
-  // TODO: Make a proper map between error codes and error messages
-  private getApiErrorMsg(errorCode?: ApiErrorCode) {
-    switch (errorCode) {
-      case ApiErrorCode.UNAUTHORIZED_OPERATION:
-        return 'Unauthorized operation';
-      case ApiErrorCode.USER_NOT_FOUND:
-        return "Couldn't find user";
-      case ApiErrorCode.HIDEOUT_NOT_FOUND:
-        return "Couldn't find hideout";
-      default:
-        return 'An unexpected error happened';
-    }
-  }
-
   protected requestAPI<T>(endpoint: string, config: RequestConfig = {}) {
     const { method = 'GET', params, body } = config;
 
@@ -70,7 +50,7 @@ export abstract class BaseApiClient {
           let errorMsg;
 
           if (status === 0) errorMsg = this.getClientErrorMsg(ClientErrorCode.REQUEST_TIMED_OUT);
-          else errorMsg = this.getApiErrorMsg(response.errorCode as ApiErrorCode);
+          else errorMsg = getApiErrorMsg(response.errorCode as ApiErrorCode);
 
           this.loggingService.logError(
             'An API client request failed.',

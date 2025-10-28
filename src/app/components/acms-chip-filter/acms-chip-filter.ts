@@ -44,20 +44,19 @@ export class AcmsChipFilter {
   filteredItems = computed<ACMSOption[]>(() => {
     const items = this.items();
     const query = this.query();
-
     return this.getFilteredItems(items, query);
   });
 
   selectedItems = computed<ACMSOption[]>(() => {
-    const _value = this.value();
-    const _items = this.items();
+    const value = this.value();
+    const items = this.items();
 
-    if (!_value) return [];
+    if (!value) return [];
 
     const selected: ACMSOption[] = [];
 
-    for (const id of _value) {
-      const equivalentItem = _items.find((i) => i.value === id);
+    for (const id of value) {
+      const equivalentItem = items.find((i) => i.value === id);
 
       if (equivalentItem) selected.push(equivalentItem);
     }

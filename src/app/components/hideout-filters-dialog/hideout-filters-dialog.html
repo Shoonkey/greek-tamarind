@@ -44,15 +44,15 @@
       label="Maps"
       select-aria-label="Hideout map selection"
       [items]="mapsToOptions(_data.maps)"
-      [value]="_filters.maps"
-      (change)="updateFilter('maps', $event)"
+      [value]="_filters.mapIds || null"
+      (change)="updateFilter('mapIds', $event)"
     />
     <app-acms-chip-filter
       label="Tags"
       select-aria-label="Hideout tag selection"
       [items]="tagsToOptions(_data.tags)"
-      [value]="_filters.tags"
-      (change)="updateFilter('tags', $event)"
+      [value]="_filters.tagIds || null"
+      (change)="updateFilter('tagIds', $event)"
     />
   </div>
   <mat-dialog-actions>
