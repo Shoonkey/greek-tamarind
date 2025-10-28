@@ -1,54 +1,67 @@
-@let _errors = errors();
+<!-- TODO: Figure out how to handle errors in the applications (snackbar?) -->
+<!-- @let _errors = errors();
 
-@if (loadingPage()) {
-  <p>Loading filters and list...</p>
-} @else if (_errors.length > 0) {
+if (_errors.length > 0) {
   <div class="error-list">
     @for (err of _errors; track $index) {
       <p class="error">{{ err }}</p>
     }
   </div>
-} @else {
-  @let _hideouts = clientHideoutList();
-  @if (!loadingList()) {
-    <div class="filter-area">
-      <div>
-        <button
-          matButton
-          matTooltip="Open filters menu"
-          (click)="openFilterDialog()"
-          aria-keyshortcuts="Control+K"
-        >
-          <mat-icon>tune</mat-icon>
-          Filters
-        </button>
-        <span class="kbd-shortcut"><kbd>Ctrl</kbd> + <kbd>K</kbd></span>
-      </div>
-      <div class="clear-btn-container">
-        @let _activeFiltersCount = activeFiltersCount();
-        @if (_activeFiltersCount) {
-          <p>
-            <span class="highlight">{{ activeFiltersCount() }}</span> active filters
-          </p>
-          <button mat-button (click)="clearFilters()">Clear</button>
-        } @else {
-          <p>No active filters</p>
-        }
-      </div>
+} -->
+
+@defer (when !loadingFilters()) {
+  <div class="filter-area">
+    <div>
+      <button
+        matButton
+        matTooltip="Open filters menu"
+        (click)="openFilterDialog()"
+        aria-keyshortcuts="Control+K"
+      >
+        <mat-icon>tune</mat-icon>
+        Filters
+      </button>
+      <span class="kbd-shortcut"><kbd>Ctrl</kbd> + <kbd>K</kbd></span>
     </div>
-    @if (_hideouts.length > 0) {
-      <ul class="hideout-list">
-        @for (hideout of _hideouts; track hideout.id) {
-          <li class="hideout-item"><app-hideout-card [hideout]="hideout" /></li>
-        }
-      </ul>
-      <app-pagination-control
-        [currentPage]="currentClientPage()"
-        (pageChanged)="handlePageChange($event)"
-        [totalPages]="clientPageCount()"
-      />
-    } @else {
-      <p class="no-hideout-match">No hideouts match the filters.</p>
-    }
+    <div class="clear-btn-container">
+      @let _activeFiltersCount = activeFiltersCount();
+      @if (_activeFiltersCount) {
+        <p>
+          <span class="highlight">{{ activeFiltersCount() }}</span> active filters
+        </p>
+        <button mat-button (click)="clearFilters()">Clear</button>
+      } @else {
+        <p>No active filters</p>
+      }
+    </div>
+  </div>
+} @placeholder (minimum 200ms) {
+  <div class="centered">
+    <p>Loading filters...</p>
+    <mat-progress-spinner mode="indeterminate" [diameter]="24" />
+  </div>
+}
+
+@defer (when !loadingList()) {
+  @let _hideouts = clientHideoutList();
+  @if (_hideouts.length > 0) {
+    <ul class="hideout-list">
+      @for (hideout of _hideouts; track hideout.id) {
+        <li class="hideout-item"><app-hideout-card [hideout]="hideout" /></li>
+      }
+    </ul>
+    <app-pagination-control
+      [currentPage]="currentClientPage()"
+      (pageChanged)="handlePageChange($event)"
+      [totalPages]="clientPageCount()"
+    />
+  } @else {
+    <p class="centered">No hideouts match the filters.</p>
   }
+} @placeholder (minimum 200ms) {
+  <ul class="placeholder-hideout-list">
+    @for (_ of [0, 0, 0, 0, 0, 0]; track $index) {
+      <app-placeholder-hideout-card />
+    }
+  </ul>
 }

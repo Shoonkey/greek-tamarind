@@ -16,7 +16,7 @@
   --items-per-page: 0;
 }
 
-ul.hideout-list {
+ul:is(.hideout-list, .placeholder-hideout-list) {
   list-style-type: none;
 
   --line-count: calc(var(--items-per-page) / var(--items-per-line));
@@ -56,9 +56,11 @@ ul.hideout-list {
   }
 }
 
-.centered-observation {
-  text-align: center;
-  font-size: 1.25rem;
-  align-self: center;
+.centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1rem;
   color: var(--text-secondary);
 }

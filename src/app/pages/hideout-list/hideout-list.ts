@@ -4,10 +4,13 @@ import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatButton } from '@angular/material/button';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { ApiClient, HideoutListFiltersInput } from '../../services/api-client/api-client';
 import { LoggingService } from '../../services/logging-service/logging-service';
 import { HideoutListItem } from '../../models/HideoutListItem';
+import { HideoutMap } from '../../models/HideoutMap';
+import { HideoutTag } from '../../models/HideoutTag';
 import { HideoutCard } from '../../components/hideout-card/hideout-card';
 import { PaginationControl } from '../../components/pagination-control/pagination-control';
 import {
@@ -15,12 +18,19 @@ import {
   HideoutFiltersDialog,
 } from '../../components/hideout-filters-dialog/hideout-filters-dialog';
 import { KeyboardShortcutListener } from '../../services/keyboard-shortcut-listener/keyboard-shortcut-listener';
-import { HideoutMap } from '../../models/HideoutMap';
-import { HideoutTag } from '../../models/HideoutTag';
+import { PlaceholderHideoutCard } from '../../components/placeholder-hideout-card/placeholder-hideout-card';
 
 @Component({
   selector: 'app-hideout-list',
-  imports: [HideoutCard, PaginationControl, MatIcon, MatButton, MatTooltip],
+  imports: [
+    HideoutCard,
+    PaginationControl,
+    MatIcon,
+    MatButton,
+    MatTooltip,
+    MatProgressSpinnerModule,
+    PlaceholderHideoutCard,
+  ],
   templateUrl: './hideout-list.html',
   styleUrl: './hideout-list.scss',
 })
@@ -44,7 +54,7 @@ export class HideoutList implements OnInit, OnDestroy {
   serverItemCount = signal<number | null>(null);
   itemsPerPage = signal<number>(5);
 
-  loadingPage = signal<boolean>(false);
+  loadingFilters = signal<boolean>(false);
   loadingList = signal<boolean>(false);
   errors = signal<string[]>([]);
 
@@ -232,14 +242,20 @@ export class HideoutList implements OnInit, OnDestroy {
   loadPageData() {
     const api = this.apiClient;
 
-    this.loadingPage.set(true);
+    this.loadingFilters.set(true);
+    this.loadingList.set(true);
 
     return forkJoin({
       tags: api.getHideoutTags(),
       maps: api.getHideoutMaps(),
       hideoutResponse: this.loadHideouts({ standalone: false, freshList: true }),
     })
-      .pipe(finalize(() => this.loadingPage.set(false)))
+      .pipe(
+        finalize(() => {
+          this.loadingFilters.set(false);
+          this.loadingList.set(false);
+        }),
+      )
       .subscribe({
         next: ({ tags, maps, hideoutResponse }) => {
           this.hideoutTags.set(tags);
