@@ -10,7 +10,7 @@ function getHideoutListItem(hideout: Hideout): HideoutListItem {
     'id',
     'author',
     'hasMTX',
-    'imageUrls',
+    'images',
     'map',
     'name',
     'rating',

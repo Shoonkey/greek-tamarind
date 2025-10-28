@@ -10,8 +10,7 @@ export interface Hideout {
   poeVersion: PoeVersion;
   rating: number;
   map: HideoutMap;
-  imageUrls: string[];
-  // images: HideoutImage[];
+  images: HideoutImage[];
   createdAt: string;
   updatedAt: string;
   author: string;

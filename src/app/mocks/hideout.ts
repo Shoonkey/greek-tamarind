@@ -9,8 +9,12 @@ export const mockedHideout: Hideout = {
   rating: 4.7,
   poeVersion: PoeVersion.Two,
   map: hideoutMaps[0],
-  imageUrls: ['/example.png'],
-  // images: [{ src: '/example.png', alt: '' }],
+  images: [
+    {
+      url: '/hideout_example.png',
+      alt: 'Example hideout image',
+    },
+  ],
   createdAt: '2025-09-05T12:51:58.405Z',
   updatedAt: '2025-09-05T14:51:58.405Z',
   author: 'Shinjoku',

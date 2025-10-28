@@ -1,25 +1,23 @@
 @let _hideout = hideout();
-<!-- @let _images = _hideout.images; -->
-@let _images = _hideout.imageUrls;
+@let _images = _hideout.images;
 @let _selectedImg = _images[selectedImgIdx()];
 
 <div class="hideout-card">
   <div class="img-gallery">
     <ul class="miniature-list">
       @for (img of _images; let idx = $index; track $index) {
-        <!-- TODO: Add .src and .alt back once images are sent fully from the API -->
         <li>
           <img
             (click)="selectedImgIdx.set(idx)"
-            [src]="img"
-            [alt]="`Hideout image #${idx}`"
+            [src]="img.url"
+            [alt]="img.alt"
             class="miniature-img"
           />
         </li>
       }
     </ul>
     <a [routerLink]="`/hideout/${_hideout.id}`">
-      <img class="selected-img" [src]="_selectedImg" [alt]="_selectedImg" />
+      <img class="selected-img" [src]="_selectedImg.url" [alt]="_selectedImg.alt" />
     </a>
   </div>
   <div class="info-container">

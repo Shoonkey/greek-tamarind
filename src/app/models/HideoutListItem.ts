@@ -4,7 +4,7 @@ export type HideoutListItemProp =
   | 'id'
   | 'author'
   | 'hasMTX'
-  | 'imageUrls'
+  | 'images'
   | 'map'
   | 'name'
   | 'rating'

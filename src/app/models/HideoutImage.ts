@@ -1,4 +1,4 @@
 export interface HideoutImage {
-  src: string;
+  url: string;
   alt: string;
 }
