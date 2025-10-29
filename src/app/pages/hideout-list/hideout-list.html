@@ -15,7 +15,7 @@ if (_errors.length > 0) {
       <button
         matButton
         matTooltip="Open filters menu"
-        (click)="openFilterDialog()"
+        (click)="triggerFilterDialogFlow()"
         aria-keyshortcuts="Control+K"
       >
         <mat-icon>tune</mat-icon>
@@ -42,8 +42,8 @@ if (_errors.length > 0) {
   </div>
 }
 
-@defer (when !loadingList()) {
-  @let _hideouts = clientHideoutList();
+@defer (when !smartList.loading()) {
+  @let _hideouts = smartList.list();
   @if (_hideouts.length > 0) {
     <ul class="hideout-list">
       @for (hideout of _hideouts; track hideout.id) {
@@ -51,9 +51,9 @@ if (_errors.length > 0) {
       }
     </ul>
     <app-pagination-control
-      [currentPage]="currentClientPage()"
-      (pageChanged)="handlePageChange($event)"
-      [totalPages]="clientPageCount()"
+      [currentPage]="smartList.currentPage()"
+      (pageChanged)="smartList.triggerPageChangeFlow({ page: $event })"
+      [totalPages]="smartList.totalPages()"
     />
   } @else {
     <p class="centered">No hideouts match the filters.</p>
