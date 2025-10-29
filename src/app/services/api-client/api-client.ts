@@ -16,6 +16,7 @@ export interface HideoutListFiltersInput {
 
 export interface HideoutListOptions {
   page: number;
+  pageSize: number;
   filters?: HideoutListFiltersInput;
 }
 
@@ -28,9 +29,9 @@ export interface GetHideoutListResponse {
   providedIn: 'root',
 })
 export class ApiClient extends BaseApiClient {
-  getHideoutList({ page, filters }: HideoutListOptions) {
+  getHideoutList({ page, pageSize, filters }: HideoutListOptions) {
     return this.requestAPI<GetHideoutListResponse>('/hideout/list', {
-      params: { page, ...filters },
+      params: { page, pageSize, ...filters },
     });
   }
 
