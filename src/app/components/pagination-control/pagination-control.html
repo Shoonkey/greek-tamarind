@@ -1,45 +1,18 @@
 <div class="pagination-control">
   <button
     mat-icon-button
-    [disabled]="editing() || currentPage() === 1"
+    [disabled]="currentPage() === 1"
     (click)="pageChanged.emit(currentPage() - 1)"
     matTooltip="Previous page"
   >
     <mat-icon>chevron_left</mat-icon>
   </button>
   <div class="page-container">
-    @if (editing()) {
-      <form class="page-form" (submit)="handlePageFormSubmit($event)">
-        <mat-form-field appearance="outline" subscriptSizing="dynamic">
-          <input
-            matInput
-            type="number"
-            min="1"
-            [max]="totalPages()"
-            [value]="currentPage()"
-            required
-          />
-        </mat-form-field>
-        <button
-          mat-icon-button
-          type="submit"
-          class="confirm-btn"
-          [attr.aria-hidden]="!editing()"
-          matTooltip="Confirm"
-        >
-          <mat-icon>check</mat-icon>
-        </button>
-      </form>
-    } @else {
-      <button class="change-page-btn" mat-icon-button (click)="toggleInputMode()">
-        {{ currentPage() }}
-      </button>
-    }
-    <p>&nbsp;/ {{ totalPages() }}</p>
+    <p>{{ currentPage() }} / {{ totalPages() }}</p>
   </div>
   <button
     mat-icon-button
-    [disabled]="editing() || currentPage() === totalPages()"
+    [disabled]="currentPage() === totalPages()"
     (click)="pageChanged.emit(currentPage() + 1)"
     matTooltip="Next page"
   >

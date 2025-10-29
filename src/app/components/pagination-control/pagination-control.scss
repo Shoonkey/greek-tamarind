@@ -12,43 +12,7 @@ button:hover {
   color: var(--light-highlight-color);
 }
 
-.change-page-btn {
-  font-size: 1rem;
-}
-
 .page-container {
   display: flex;
   align-items: center;
-
-  .page-form {
-    position: relative;
-
-    input {
-      width: 4ch !important;
-      height: 1.25rem;
-    }
-
-    .confirm-btn {
-      position: absolute;
-      left: 0.5rem;
-      top: 2rem;
-    }
-
-    // fixes for Angular material
-    ::ng-deep {
-      .mat-mdc-form-field-infix {
-        padding: 0;
-        min-height: auto;
-      }
-
-      .mdc-text-field {
-        padding-inline: 8px;
-        padding-block: 4px;
-      }
-
-      .mat-mdc-form-field-infix {
-        width: auto !important;
-      }
-    }
-  }
 }
