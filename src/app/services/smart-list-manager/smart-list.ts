@@ -83,8 +83,6 @@ export abstract class SmartList<T> {
     this._loading = signal<boolean>(false);
   }
 
-  // TODO(issue): currently SmartList doesn't know how to deal with non-continuous page changes
-  // e.g going to page 10 from page 2
   triggerPageChangeFlow({
     page: clientPage,
     newFlow = false,
@@ -104,6 +102,8 @@ export abstract class SmartList<T> {
       this.loggingService.logInfo(
         `[SmartList] Making the first call of a flow (first access or filters changed)`,
       );
+
+      this._flush();
 
       const pagesToFetch = this._prefetchPageCount + 1;
       const prefetchesAndCurrentPage = serverItemsPerPage * pagesToFetch;
@@ -144,13 +144,6 @@ export abstract class SmartList<T> {
 
   private _flush() {
     this._storedList.set([]);
-  }
-
-  private _getServerPageFromClientPage(clientPage: number) {
-    const serverPageToClientPageRatio = this._serverItemsPerPage() / this._clientItemsPerPage();
-    // 1 -> 1
-    // 2 -> 1
-    return Math.ceil(clientPage / serverPageToClientPageRatio);
   }
 
   private _retrieveData(page: number, pageSize: number) {
