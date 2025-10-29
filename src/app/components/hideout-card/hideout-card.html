@@ -17,7 +17,9 @@
       }
     </ul>
     <a [routerLink]="`/hideout/${_hideout.id}`">
-      <img class="selected-img" [src]="_selectedImg.url" [alt]="_selectedImg.alt" />
+      @if (_selectedImg) {
+        <img class="selected-img" [src]="_selectedImg.url" [alt]="_selectedImg.alt" />
+      }
     </a>
   </div>
   <div class="info-container">
