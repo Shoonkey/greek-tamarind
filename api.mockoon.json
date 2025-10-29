@@ -17,7 +17,7 @@
       "responses": [
         {
           "uuid": "c7b9b5f6-316e-43c0-969e-3efb853c7350",
-          "body": "{\n  \"list\": {{ data 'kakh' 'hideouts' }},\n  \"matchCount\": 25\n}",
+          "body": "{\n  \"items\": {{ data 'kakh' 'hideouts' }},\n  \"totalCount\": {{ getGlobalVar 'hideout_amount' }}\n}",
           "latency": 0,
           "statusCode": 200,
           "label": "",
@@ -257,37 +257,6 @@
       "streamingInterval": 0
     },
     {
-      "uuid": "fe091038-ad8f-445d-8845-4234e65b2a47",
-      "type": "http",
-      "documentation": "Get hideout page count",
-      "method": "get",
-      "endpoint": "hideout/pagination",
-      "responses": [
-        {
-          "uuid": "7d201369-9af0-43a0-9fd9-f3c11ef35f62",
-          "body": "{\n  \"itemCount\": 44,\n  \"itemsPerPage\": 12\n}",
-          "latency": 0,
-          "statusCode": 200,
-          "label": "",
-          "headers": [],
-          "bodyType": "INLINE",
-          "filePath": "",
-          "databucketID": "",
-          "sendFileAsBody": false,
-          "rules": [],
-          "rulesOperator": "OR",
-          "disableTemplating": false,
-          "fallbackTo404": false,
-          "default": true,
-          "crudKey": "id",
-          "callbacks": []
-        }
-      ],
-      "responseMode": null,
-      "streamingMode": null,
-      "streamingInterval": 0
-    },
-    {
       "uuid": "9737b287-5941-4a59-b153-8af227c72bd6",
       "type": "http",
       "documentation": "Get list of hideout maps",
@@ -362,10 +331,6 @@
     {
       "type": "route",
       "uuid": "6867683c-4056-4fc5-8b04-d86b2cd39d7b"
-    },
-    {
-      "type": "route",
-      "uuid": "fe091038-ad8f-445d-8845-4234e65b2a47"
     },
     {
       "type": "route",
@@ -445,7 +410,7 @@
       "id": "kakh",
       "name": "Database mock",
       "documentation": "",
-      "value": "{\n  \"hideouts\": [\n    {{ setVar 'hideout_amount' (faker 'number.int' min=4 max=12) }}\n    {{#repeat @hideout_amount}}\n    {\n      \"guid\": \"{{ faker 'string.uuid' }}\",\n      \"name\": \"{{ faker 'word.words' }}\",\n      \"poeVersion\": {{ oneOf ( array '1' '2') }},\n      \"map\": {\n        \"id\": \"{{ faker 'string.uuid' }}\",\n        \"name\": \"Shrine Hideout\"\n      },\n      \"images\": [\n        {{ setVar 'img_amount' (faker 'number.int' min=2 max=4) }}\n        {{#repeat @img_amount}}\n        {\n          \"src\": \"{{ faker 'image.urlPicsumPhotos' }}\",\n          \"alt\": \"{{ faker 'lorem.sentence' }}\"\n        }\n        {{/repeat}}\n      ],\n      \"createdAt\": \"{{ faker 'date.past' }}\",\n      \"updatedAt\": \"{{ faker 'date.recent' }}\",\n      \"author\": \"{{ faker 'internet.username' }}\",\n      \"timesDownloaded\": {{ faker 'number.int' min=3 max=100 }},\n      \"commentCount\": {{ faker 'number.int' min=2 max=40 }},\n      \"timesFavorited\": {{ faker 'number.int' min=7 max=200 }},\n      \"hasMTX\": {{ faker 'datatype.boolean' }},\n      \"rating\": {{ faker 'number.float' min=1 max=5 multipleOf=0.5 }},\n      \"description\": \"{{ faker 'lorem.sentence' }}\",\n      \"tags\": [\n        {{ setVar 'tag_amount' (faker 'number.int' min=2 max=4) }}\n        {{#repeat @tag_amount}}\n        \"{{ faker 'word.adjective' }}\",\n        {{/repeat}}\n      ],\n      \"changelogHistory\": [\n        {{ setVar 'log_amount' (faker 'number.int' min=1 max=4) }}\n        {{#repeat @log_amount}}\n        {\n          \"version\": \"{{ faker 'number.float' min=1 max=3 multipleOf=0.1 }}\",\n          \"publishedAt\": \"{{ faker 'date.past' }}\",\n          \"description\": \"{{ faker 'lorem.sentence' }}\",\n          \"fileURL\": \"/celestial-quarters.sample.hideout\"\n        }\n        {{/repeat}}\n      ]\n    }\n    {{/repeat}}\n  ],\n  \"tags\": [\n    {\n      \"id\": \"{{ faker 'string.uuid' }}\", \n      \"name\": \"cozy\"\n    },\n    {\n      \"id\": \"{{ faker 'string.uuid' }}\",\n      \"name\": \"dark\"\n    }\n  ],\n  \"maps\": [\n    {\n      \"id\": \"{{ faker 'string.uuid' }}\", \n      \"name\": \"Shrine Hideout\"\n    },\n    {\n      \"id\": \"{{ faker 'string.uuid' }}\",\n      \"name\": \"Trial of the Ancestors Hideout\"\n    }\n  ]\n}"
+      "value": "{\n  \"hideouts\": [\n    {{ setGlobalVar 'hideout_amount' (faker 'number.int' min=10 max=20) }}\n    {{#repeat (getGlobalVar 'hideout_amount') }}\n    {\n      \"id\": \"{{ faker 'string.uuid' }}\",\n      \"name\": \"{{ faker 'word.words' }}\",\n      \"poeVersion\": {{ oneOf ( array '1' '2') }},\n      \"map\": {\n        \"id\": \"{{ faker 'string.uuid' }}\",\n        \"name\": \"Shrine Hideout\"\n      },\n      \"images\": [\n        {{ setVar 'img_amount' (faker 'number.int' min=2 max=4) }}\n        {{#repeat @img_amount}}\n        {\n          \"url\": \"{{ faker 'image.urlPicsumPhotos' width=320 height=180 blur=0 grayscale=false }}\",\n          \"alt\": \"{{ faker 'lorem.sentence' }}\"\n        }\n        {{/repeat}}\n      ],\n      \"createdAt\": \"{{ faker 'date.past' }}\",\n      \"updatedAt\": \"{{ faker 'date.recent' }}\",\n      \"author\": \"{{ faker 'internet.username' }}\",\n      \"timesDownloaded\": {{ faker 'number.int' min=3 max=100 }},\n      \"commentCount\": {{ faker 'number.int' min=2 max=40 }},\n      \"timesFavorited\": {{ faker 'number.int' min=7 max=200 }},\n      \"hasMTX\": {{ faker 'datatype.boolean' }},\n      \"rating\": {{ faker 'number.float' min=1 max=5 multipleOf=0.5 }},\n      \"description\": \"{{ faker 'lorem.sentence' }}\",\n      \"tags\": [\n        {{ setVar 'tag_amount' (faker 'number.int' min=2 max=4) }}\n        {{#repeat @tag_amount}}\n        \"{{ faker 'word.adjective' }}\",\n        {{/repeat}}\n      ],\n      \"changelogHistory\": [\n        {{ setVar 'log_amount' (faker 'number.int' min=1 max=4) }}\n        {{#repeat @log_amount}}\n        {\n          \"version\": \"{{ faker 'number.float' min=1 max=3 multipleOf=0.1 }}\",\n          \"publishedAt\": \"{{ faker 'date.past' }}\",\n          \"description\": \"{{ faker 'lorem.sentence' }}\",\n          \"fileURL\": \"/celestial-quarters.sample.hideout\"\n        }\n        {{/repeat}}\n      ]\n    }\n    {{/repeat}}\n  ],\n  \"tags\": [\n    {\n      \"id\": \"{{ faker 'string.uuid' }}\", \n      \"name\": \"cozy\"\n    },\n    {\n      \"id\": \"{{ faker 'string.uuid' }}\",\n      \"name\": \"dark\"\n    }\n  ],\n  \"maps\": [\n    {\n      \"id\": \"{{ faker 'string.uuid' }}\", \n      \"name\": \"Shrine Hideout\"\n    },\n    {\n      \"id\": \"{{ faker 'string.uuid' }}\",\n      \"name\": \"Trial of the Ancestors Hideout\"\n    }\n  ]\n}"
     }
   ],
   "callbacks": []
