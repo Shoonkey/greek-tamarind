@@ -1,16 +1,16 @@
 import { TestBed } from '@angular/core/testing';
-
-import { KeyboardShortcutListener } from './keyboard-shortcut-listener';
 import { provideZonelessChangeDetection } from '@angular/core';
 
-describe('KeyboardShortcutListener', () => {
-  let service: KeyboardShortcutListener;
+import { KeyboardListener } from './keyboard-listener';
+
+describe('KeyboardListener', () => {
+  let service: KeyboardListener;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [provideZonelessChangeDetection()],
     });
-    service = TestBed.inject(KeyboardShortcutListener);
+    service = TestBed.inject(KeyboardListener);
   });
 
   it('should be created', () => {

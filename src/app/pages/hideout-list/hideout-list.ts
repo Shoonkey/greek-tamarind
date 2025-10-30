@@ -8,7 +8,7 @@ import {
   Signal,
   signal,
 } from '@angular/core';
-import { debounce, finalize, forkJoin, interval, Observable, Subscription } from 'rxjs';
+import { finalize, forkJoin } from 'rxjs';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatButton } from '@angular/material/button';
@@ -18,7 +18,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ApiClient, HideoutListFiltersInput } from '../../services/api-client/api-client';
 import { LoggingService } from '../../services/logging-service/logging-service';
 import { SmartListManager } from '../../services/smart-list-manager/smart-list-manager';
-import { KeyboardShortcutListener } from '../../services/keyboard-shortcut-listener/keyboard-shortcut-listener';
+import { KeyboardListener } from '../../services/keyboard-shortcut-listener/keyboard-listener';
 import { HideoutListItem } from '../../models/HideoutListItem';
 import { HideoutMap } from '../../models/HideoutMap';
 import { HideoutTag } from '../../models/HideoutTag';
@@ -29,6 +29,7 @@ import {
   HideoutFiltersBaseData,
   HideoutFiltersDialog,
 } from '../../components/hideout-filters-dialog/hideout-filters-dialog';
+import { ElementResizeListener } from '../../services/element-resize-listener/element-resize-listener';
 
 @Component({
   selector: 'app-hideout-list',
@@ -45,15 +46,14 @@ import {
   styleUrl: './hideout-list.scss',
 })
 export class HideoutList implements OnInit, OnDestroy {
-  resizeSubscription!: Subscription;
-  filterShortcutSubscription!: Subscription;
   hideoutList?: Signal<HideoutList[]>;
 
   loggingService = inject(LoggingService);
   apiClient = inject(ApiClient);
   dialogManager = inject(MatDialog);
   smartListManager = inject(SmartListManager);
-  keyboardShortcutListener = inject(KeyboardShortcutListener);
+  kbdListener = inject(KeyboardListener);
+  resizeListener = inject(ElementResizeListener);
 
   eltRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
@@ -82,23 +82,24 @@ export class HideoutList implements OnInit, OnDestroy {
   });
 
   ngOnInit() {
-    this.loadFilters();
-
-    this.subscribeToResizeEvent(document.body, (entries) => {
-      const entry = entries[entries.length - 1];
-      const { width } = entry.contentRect;
-      this.updateLayoutFromWidth(width);
-    });
-
     this.setupFilterShortcut();
-    this.updateLayoutFromWidth(document.body.clientWidth);
+    this.setupResizingLayout();
 
+    this.loadFilters();
+    this.updateLayoutFromWidth(document.body.clientWidth);
     this.smartList.triggerPageChangeFlow({ page: 1, newFlow: true });
   }
 
   ngOnDestroy() {
-    if (this.resizeSubscription) this.resizeSubscription.unsubscribe();
-    if (this.filterShortcutSubscription) this.filterShortcutSubscription.unsubscribe();
+    this.resizeListener.unsubscribe();
+    this.kbdListener.unsubscribe();
+  }
+
+  setupResizingLayout() {
+    this.resizeListener.subscribeToResizeEvent(document.body, (entry) => {
+      const { width } = entry.contentRect;
+      this.updateLayoutFromWidth(width);
+    });
   }
 
   updateLayoutFromWidth(width: number) {
@@ -125,7 +126,7 @@ export class HideoutList implements OnInit, OnDestroy {
   }
 
   setupFilterShortcut() {
-    this.keyboardShortcutListener.watch((ev) => {
+    this.kbdListener.watch((ev) => {
       if (!ev.ctrlKey || ev.key.toLowerCase() !== 'k') return;
       if (this.dialogManager.openDialogs.length !== 0) return;
 
@@ -165,26 +166,6 @@ export class HideoutList implements OnInit, OnDestroy {
       this.filters.set(newFilters);
       this.smartList.triggerPageChangeFlow({ page: 1, newFlow: true });
     });
-  }
-
-  // `callback` runs `intervalMs` milliseconds after the layout stops being resized
-  subscribeToResizeEvent(element: HTMLElement, callback: (entries: ResizeObserverEntry[]) => void) {
-    const intervalMs = 300;
-
-    const observable = new Observable<ResizeObserverEntry[]>((subscriber) => {
-      const observer = new ResizeObserver((entries) => subscriber.next(entries));
-      observer.observe(element);
-
-      return () => observer.disconnect();
-    });
-
-    this.resizeSubscription = observable
-      .pipe(debounce(() => interval(intervalMs)))
-      .subscribe(callback);
-  }
-
-  unsubscribeToResizeEvent() {
-    this.resizeSubscription.unsubscribe();
   }
 
   loadFilters() {
