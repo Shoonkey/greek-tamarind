@@ -1,11 +1,11 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable, OnDestroy } from '@angular/core';
 import { debounce, interval, Observable, Subscription } from 'rxjs';
+import { LoggingService } from '../logging-service/logging-service';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class ElementResizeListener {
-  _subscription?: Subscription | null;
+@Injectable()
+export class ElementResizeListener implements OnDestroy {
+  private _loggingService = inject(LoggingService);
+  private _subscription?: Subscription | null;
 
   // `callback` runs `intervalMs` milliseconds after the layout stops being resized
   subscribeToResizeEvent(element: HTMLElement, callback: (entry: ResizeObserverEntry) => void) {
@@ -26,9 +26,14 @@ export class ElementResizeListener {
     this._subscription = observable.pipe(debounce(() => interval(intervalMs))).subscribe(callback);
   }
 
+  ngOnDestroy() {
+    this.unsubscribe();
+  }
+
   unsubscribe() {
     if (!this._subscription) return;
     this._subscription.unsubscribe();
     this._subscription = null;
+    this._loggingService.logInfo('[ElementResizeListener] Unsubscribed from element resize event');
   }
 }

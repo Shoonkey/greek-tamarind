@@ -1,13 +1,4 @@
-import {
-  Component,
-  computed,
-  ElementRef,
-  inject,
-  OnDestroy,
-  OnInit,
-  Signal,
-  signal,
-} from '@angular/core';
+import { Component, computed, ElementRef, inject, OnInit, Signal, signal } from '@angular/core';
 import { finalize, forkJoin } from 'rxjs';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
@@ -42,10 +33,11 @@ import { ElementResizeListener } from '../../services/element-resize-listener/el
     MatProgressSpinnerModule,
     PlaceholderHideoutCard,
   ],
+  providers: [KeyboardListener, ElementResizeListener],
   templateUrl: './hideout-list.html',
   styleUrl: './hideout-list.scss',
 })
-export class HideoutList implements OnInit, OnDestroy {
+export class HideoutList implements OnInit {
   hideoutList?: Signal<HideoutList[]>;
 
   loggingService = inject(LoggingService);
@@ -88,11 +80,6 @@ export class HideoutList implements OnInit, OnDestroy {
     this.loadFilters();
     this.updateLayoutFromWidth(document.body.clientWidth);
     this.smartList.triggerPageChangeFlow({ page: 1, newFlow: true });
-  }
-
-  ngOnDestroy() {
-    this.resizeListener.unsubscribe();
-    this.kbdListener.unsubscribe();
   }
 
   setupResizingLayout() {

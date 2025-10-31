@@ -8,8 +8,9 @@ describe('KeyboardListener', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()],
+      providers: [provideZonelessChangeDetection(), KeyboardListener],
     });
+
     service = TestBed.inject(KeyboardListener);
   });
 

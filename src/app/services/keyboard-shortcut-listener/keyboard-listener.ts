@@ -1,10 +1,12 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable, OnDestroy } from '@angular/core';
 import { fromEvent, Subscription } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class KeyboardListener {
+import { LoggingService } from '../logging-service/logging-service';
+
+@Injectable()
+export class KeyboardListener implements OnDestroy {
+  private _loggingService = inject(LoggingService);
+
   private _subscription?: Subscription | null;
   private _keyupEvents = fromEvent(document, 'keydown');
 
@@ -17,9 +19,14 @@ export class KeyboardListener {
     });
   }
 
+  ngOnDestroy() {
+    this.unsubscribe();
+  }
+
   unsubscribe() {
     if (!this._subscription) return;
     this._subscription.unsubscribe();
     this._subscription = null;
+    this._loggingService.logInfo('[KeyboardListener] Unsubscribed from keyup event');
   }
 }

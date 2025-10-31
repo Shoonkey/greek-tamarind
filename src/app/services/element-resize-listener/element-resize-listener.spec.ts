@@ -8,7 +8,7 @@ describe('ElementResizeListener', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()],
+      providers: [provideZonelessChangeDetection(), ElementResizeListener],
     });
     service = TestBed.inject(ElementResizeListener);
   });
