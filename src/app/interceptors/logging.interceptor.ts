@@ -1,11 +1,13 @@
 import { inject } from '@angular/core';
 
-import { environment } from '../../environments/environment';
 import { AngularHttpInterceptor } from '../models/AngularHttpInterceptor';
 import { LoggingService } from '../services/logging-service/logging-service';
+import { EnvironmentService } from '../services/environment-service/environment-service';
 
 export const loggingInterceptor: AngularHttpInterceptor = (req, next) => {
-  if (!environment.production) {
+  const environment = inject(EnvironmentService);
+
+  if (!environment.isProduction()) {
     const loggingService = inject(LoggingService);
     loggingService.logInfo(`API request at: ${req.url}`);
   }

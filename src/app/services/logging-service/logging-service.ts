@@ -1,13 +1,15 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 
-import { environment } from '../../../environments/environment';
+import { EnvironmentService } from '../environment-service/environment-service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LoggingService {
+  private _environment = inject(EnvironmentService);
+
   private _log(consoleMethod: 'log' | 'error', ...args: any[]) {
-    if (environment.production) return;
+    if (this._environment.isProduction()) return;
     console[consoleMethod]('[dev-only log]', ...args);
   }
 
