@@ -8,12 +8,12 @@ export class KeyboardListener implements OnDestroy {
   private _loggingService = inject(LoggingService);
 
   private _subscription?: Subscription | null;
-  private _keyupEvents = fromEvent(document, 'keydown');
+  private _keydownEvents = fromEvent(document, 'keydown');
 
   watch(callback: (ev: KeyboardEvent) => void) {
     if (this._subscription) throw new Error("[KeyboardListener] Can't subscribe more than once");
 
-    this._subscription = this._keyupEvents.subscribe((ev) => {
+    this._subscription = this._keydownEvents.subscribe((ev) => {
       const kbdEvent = ev as KeyboardEvent;
       callback(kbdEvent);
     });
