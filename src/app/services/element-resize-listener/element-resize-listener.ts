@@ -1,5 +1,5 @@
 import { inject, Injectable, OnDestroy } from '@angular/core';
-import { debounce, interval, Observable, Subscription } from 'rxjs';
+import { debounceTime, Observable, Subscription } from 'rxjs';
 import { LoggingService } from '../logging-service/logging-service';
 
 @Injectable()
@@ -23,7 +23,7 @@ export class ElementResizeListener implements OnDestroy {
       return () => observer.disconnect();
     });
 
-    this._subscription = observable.pipe(debounce(() => interval(intervalMs))).subscribe(callback);
+    this._subscription = observable.pipe(debounceTime(intervalMs)).subscribe(callback);
   }
 
   ngOnDestroy() {
