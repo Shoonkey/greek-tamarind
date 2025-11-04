@@ -1,4 +1,4 @@
-import { inject, WritableSignal, Signal, signal, computed } from '@angular/core';
+import { WritableSignal, Signal, signal, computed } from '@angular/core';
 import { Observable, finalize } from 'rxjs';
 
 import { LoggingService } from '../logging-service/logging-service';
@@ -23,10 +23,11 @@ export interface SmartListOptions<T> {
   onError: SmartListErrorFn;
 }
 
-export abstract class SmartList<T> {
-  private loggingService = inject(LoggingService);
+export class SmartList<T> {
+  private _loggingService: LoggingService;
 
   private _loading: WritableSignal<boolean>;
+  loading: Signal<boolean>;
 
   private _serverCurrentPage: WritableSignal<number>;
   private _serverItemsPerPage: WritableSignal<number>;
@@ -35,42 +36,42 @@ export abstract class SmartList<T> {
 
   private _clientCurrentPage: WritableSignal<number>;
   private _clientItemsPerPage: WritableSignal<number>;
-  private _clientTotalPages: Signal<number>;
   private _clientStoredPages: Signal<number>;
+  currentPage: Signal<number>;
+  totalPages: Signal<number>;
 
   private _storedList: WritableSignal<T[]>;
-  private _computedList: Signal<T[]>;
+  list: Signal<T[]>;
 
   private _prefetchPageCount: number;
 
   private _retrieverFn: SmartListRetrieverFn<T>;
   private _onError: SmartListErrorFn;
 
-  constructor(opts: SmartListOptions<T>) {
+  constructor(loggingService: LoggingService, opts: SmartListOptions<T>) {
+    this._loggingService = loggingService;
+
     const { itemsPerPage, prefetchPageCount, retrieverFn, onError } = opts;
 
     this._retrieverFn = retrieverFn;
     this._onError = onError;
 
-    this._clientItemsPerPage = signal<number>(0);
+    this._clientItemsPerPage = signal<number>(1);
     this._serverItemsPerPage = signal<number>(itemsPerPage);
     this._prefetchPageCount = prefetchPageCount;
 
     const currPage = 1;
     this._serverCurrentPage = signal<number>(currPage);
     this._clientCurrentPage = signal<number>(currPage);
+    this.currentPage = this._clientCurrentPage.asReadonly();
 
     this._storedList = signal<T[]>([]);
     this._serverMatchCount = signal<number>(0);
 
-    this._computedList = computed<T[]>(() => {
+    this.list = computed<T[]>(() => {
       const [startAt, endAt] = this._getListBoundaries();
       return this._storedList().slice(startAt, endAt);
     });
-
-    this._clientTotalPages = computed<number>(() =>
-      Math.ceil(this._serverMatchCount() / this._clientItemsPerPage()),
-    );
 
     this._serverTotalPages = computed<number>(() =>
       Math.ceil(this._serverMatchCount() / this._serverItemsPerPage()),
@@ -80,7 +81,12 @@ export abstract class SmartList<T> {
       Math.ceil(this._storedList().length / this._clientItemsPerPage()),
     );
 
+    this.totalPages = computed<number>(() =>
+      Math.ceil(this._serverMatchCount() / this._clientItemsPerPage()),
+    );
+
     this._loading = signal<boolean>(false);
+    this.loading = this._loading.asReadonly();
   }
 
   triggerPageChangeFlow({
@@ -99,7 +105,7 @@ export abstract class SmartList<T> {
     const serverHasMoreData = serverCurrentPage < serverTotalPages;
 
     if (newFlow) {
-      this.loggingService.logInfo(
+      this._loggingService.logInfo(
         `[SmartList] Making the first call of a flow (first access or filters changed)`,
       );
 
@@ -110,7 +116,7 @@ export abstract class SmartList<T> {
       this._retrieveData(1, prefetchesAndCurrentPage);
       this._serverCurrentPage.set(this._prefetchPageCount + 1);
     } else if (hasClientStoredPages && isAtLastClientPage && serverHasMoreData) {
-      this.loggingService.logInfo(
+      this._loggingService.logInfo(
         `[SmartList] User is at the last client page and server has more data;`,
         `loading server page ${serverCurrentPage + 1}/${serverTotalPages}`,
       );
@@ -124,22 +130,6 @@ export abstract class SmartList<T> {
 
   updateItemsPerPage(itemsPerPage: number) {
     this._clientItemsPerPage.set(itemsPerPage);
-  }
-
-  loading() {
-    return this._loading();
-  }
-
-  currentPage() {
-    return this._clientCurrentPage();
-  }
-
-  totalPages() {
-    return this._clientTotalPages();
-  }
-
-  list() {
-    return this._computedList();
   }
 
   private _flush() {
