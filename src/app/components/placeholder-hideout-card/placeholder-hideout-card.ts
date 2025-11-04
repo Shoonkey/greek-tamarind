@@ -6,7 +6,4 @@ import { Component } from '@angular/core';
   templateUrl: './placeholder-hideout-card.html',
   styleUrl: './placeholder-hideout-card.scss',
 })
-export class PlaceholderHideoutCard {
-  imgCount = Math.floor(Math.random() * 3) + 2;
-  mockImgArray = new Array(this.imgCount);
-}
+export class PlaceholderHideoutCard {}
