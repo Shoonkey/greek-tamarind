@@ -38,8 +38,6 @@ import { ElementResizeListener } from '../../services/element-resize-listener/el
   styleUrl: './hideout-list.scss',
 })
 export class HideoutList implements OnInit {
-  hideoutList?: Signal<HideoutList[]>;
-
   loggingService = inject(LoggingService);
   apiClient = inject(ApiClient);
   dialogManager = inject(MatDialog);
