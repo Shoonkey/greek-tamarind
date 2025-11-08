@@ -1,15 +1,25 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
+
 import { LoggedUser } from '../../models/LoggedUser';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthProvider {
-  user?: LoggedUser = {
-    username: 'potato',
-  };
+  private _user = signal<LoggedUser | null>(null);
 
-  login() {}
+  get user() {
+    return this._user.asReadonly();
+  }
+
+  // TODO: Implement auth
+  login() {
+    this._user.set({ username: 'potato' });
+  }
+
   signup() {}
-  logout() {}
+
+  logout() {
+    this._user.set(null);
+  }
 }

@@ -7,11 +7,12 @@
     </a>
   </section>
   <section class="user-action">
-    @if (user) {
+    @let _user = user();
+    @if (_user) {
       <a
         mat-icon-button
         matTooltip="Your uploaded hideouts"
-        [routerLink]="`/user/${user.username}`"
+        [routerLink]="`/user/${_user.username}`"
       >
         <mat-icon>stacks</mat-icon>
       </a>
@@ -22,9 +23,9 @@
         <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="User menu">
           <mat-icon>account_circle</mat-icon>
         </button>
-        <mat-menu #menu="matMenu">
-          <p class="logged-user-notice">
-            Logged in as&nbsp;<strong>{{ user.username }}</strong>
+        <mat-menu #menu>
+          <p mat-menu-item class="logged-user-notice">
+            Logged in as <strong>{{ _user.username }}</strong>
           </p>
           <mat-divider />
           <!-- <button mat-menu-item>Change theme</button> -->
@@ -37,7 +38,7 @@
         </mat-menu>
       </div>
     } @else {
-      <button mat-icon-button matTooltip="Login/Signup" (click)="openAuthModal()">
+      <button mat-icon-button matTooltip="Login/Signup" (click)="login()">
         <mat-icon>login</mat-icon>
       </button>
     }

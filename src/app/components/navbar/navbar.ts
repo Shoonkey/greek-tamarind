@@ -29,14 +29,9 @@ export class Navbar {
 
   user = this.authProvider.user;
 
-  authModalOpen = signal<boolean>(false);
-
   // TODO: implement auth modal component
-  openAuthModal() {
-    this.authModalOpen.set(true);
-  }
 
-  login(username: string, password: string) {
+  login() {
     this.authProvider.login();
   }
 
