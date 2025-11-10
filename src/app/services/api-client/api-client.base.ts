@@ -2,16 +2,15 @@ import { inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError } from 'rxjs';
 
-import { environment } from '../../../environments/environment';
 import { LoggingService } from '../logging-service/logging-service';
-import { ApiErrorCode, getApiErrorMsg } from './api-errors';
 import { EnvironmentService } from '../environment-service/environment-service';
+import { ApiErrorCode, getApiErrorMsg } from './api-errors';
 
 type CommonHttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 type RequestData = Record<string, any>;
 
 enum ClientErrorCode {
-  REQUEST_TIMED_OUT,
+  NETWORK_ERROR,
 }
 
 interface RequestConfig {
@@ -29,7 +28,7 @@ export abstract class BaseApiClient {
 
   private getClientErrorMsg(errorCode?: ClientErrorCode) {
     switch (errorCode) {
-      case ClientErrorCode.REQUEST_TIMED_OUT:
+      case ClientErrorCode.NETWORK_ERROR:
         return 'Unable to reach API';
       default:
         return 'An unexpected error happened';
@@ -51,7 +50,7 @@ export abstract class BaseApiClient {
         catchError(({ status, error: response }: HttpErrorResponse) => {
           let errorMsg;
 
-          if (status === 0) errorMsg = this.getClientErrorMsg(ClientErrorCode.REQUEST_TIMED_OUT);
+          if (status === 0) errorMsg = this.getClientErrorMsg(ClientErrorCode.NETWORK_ERROR);
           else errorMsg = getApiErrorMsg(response.errorCode as ApiErrorCode);
 
           this._loggingService.logError(

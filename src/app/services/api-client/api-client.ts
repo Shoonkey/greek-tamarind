@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 
-import { BaseApiClient } from './api-client.base';
 import { HideoutListItem } from '../../models/HideoutListItem';
 import { PoeVersion } from '../../models/PoeVersion';
 import { HideoutMap } from '../../models/HideoutMap';
 import { HideoutTag } from '../../models/HideoutTag';
+import { BaseApiClient } from './api-client.base';
 
 export interface HideoutListFiltersInput {
   poeVersion?: PoeVersion;
