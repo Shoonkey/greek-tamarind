@@ -60,6 +60,7 @@ ul:is(.hideout-list, .placeholder-hideout-list) {
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
   gap: 1rem;
   font-size: 1rem;
   color: var(--text-secondary);

@@ -9,8 +9,8 @@ if (_errors.length > 0) {
   </div>
 } -->
 
-@defer (when !loadingFilters()) {
-  <div class="filter-area">
+<div class="filter-area">
+  @defer (when !loadingFilters()) {
     <div>
       <button
         matButton
@@ -25,22 +25,23 @@ if (_errors.length > 0) {
     </div>
     <div class="clear-btn-container">
       @let _activeFiltersCount = activeFiltersCount();
-      @if (_activeFiltersCount) {
+      @if (_activeFiltersCount > 0) {
         <p>
-          <span class="highlight">{{ activeFiltersCount() }}</span> active filters
+          <span class="highlight">{{ _activeFiltersCount }}</span> active
+          {{ _activeFiltersCount === 1 ? 'filter' : 'filters' }}
         </p>
         <button mat-button (click)="clearFilters()">Clear</button>
       } @else {
         <p>No active filters</p>
       }
     </div>
-  </div>
-} @placeholder (minimum 200ms) {
-  <div class="centered">
-    <p>Loading filters...</p>
-    <mat-progress-spinner mode="indeterminate" [diameter]="24" />
-  </div>
-}
+  } @placeholder (minimum 200ms) {
+    <div class="centered">
+      <p>Loading filters...</p>
+      <mat-progress-spinner mode="indeterminate" [diameter]="24" />
+    </div>
+  }
+</div>
 
 @defer (when !smartList.loading()) {
   @let _hideouts = smartList.list();

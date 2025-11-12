@@ -45,6 +45,11 @@ export class HideoutList implements OnInit {
   kbdListener = inject(KeyboardListener);
   resizeListener = inject(ElementResizeListener);
 
+  // how many items to retrieve per server page
+  itemsPerPageRetrieved = 6;
+  // how many extra pages to keep in memory
+  prefetchPageCount = 1;
+
   eltRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
   hideoutTags = signal<HideoutMap[]>([]);
@@ -52,8 +57,8 @@ export class HideoutList implements OnInit {
   filters = signal<HideoutListFiltersInput>({});
 
   smartList = this.smartListManager.getSmartList<HideoutListItem>({
-    itemsPerPage: 6,
-    prefetchPageCount: 1,
+    itemsPerPage: this.itemsPerPageRetrieved,
+    prefetchPageCount: this.prefetchPageCount,
     retrieverFn: (page, pageSize) => this.loadHideouts(page, pageSize),
     onError: (err) => this.addError(err),
   });
