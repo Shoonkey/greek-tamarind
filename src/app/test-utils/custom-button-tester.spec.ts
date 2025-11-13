@@ -23,6 +23,14 @@ export class CustomButtonTester extends CustomElementTester<ButtonLikeHarness> {
     await btnHarness.click();
   }
 
+  async expectBtnToHaveDisabledState(disabled: boolean) {
+    const btnHarness = await this.getHarness();
+    const btnHostElt = await btnHarness.host();
+
+    const isDisabled = await btnHostElt.getProperty<boolean>('disabled');
+    expect(isDisabled).withContext(`Button should have disabled=${disabled}`).toBe(disabled);
+  }
+
   async expectBtnToHaveIcon(
     expectedIconName: string,
     iconPredicate?: HarnessPredicate<MatIconHarness>,
