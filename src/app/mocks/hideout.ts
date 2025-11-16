@@ -1,14 +1,14 @@
 import { Hideout } from '../models/Hideout';
 import { PoeVersion } from '../models/PoeVersion';
-import { hideoutMaps } from './hideout-maps';
-import { hideoutTags } from './hideout-tags';
+import { mockHideoutMaps } from './hideout-maps';
+import { mockHideoutTags } from './hideout-tags';
 
-export const mockedHideout: Hideout = {
+export const mockHideout: Hideout = {
   id: '0b8928d6-14d2-43c6-b759-3696325fff69',
   name: 'Primordial',
   rating: 4.7,
   poeVersion: PoeVersion.Two,
-  map: hideoutMaps[0],
+  map: mockHideoutMaps[0],
   images: [
     {
       url: '/hideout_example.png',
@@ -24,7 +24,7 @@ export const mockedHideout: Hideout = {
   hasMTX: false,
   description:
     "This is a lorem ipsum text for a Shrine Hideout upload.\n\nI have no idea what to say about it 'cause I don't know which hideout it is\nPoggers!",
-  tags: hideoutTags,
+  tags: mockHideoutTags,
   changelogHistory: [
     {
       version: '1.0',

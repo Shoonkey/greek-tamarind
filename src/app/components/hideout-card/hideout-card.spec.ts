@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ComponentRef, provideZonelessChangeDetection } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { mockedHideoutMetadata } from '../../mocks/hideout-metadata';
+import { mockHideoutMetadata } from '../../mocks/hideout-metadata';
 import { HideoutCard } from './hideout-card';
 import { HideoutImage } from '../../models/HideoutImage';
 import { TruncatePipe } from '../../pipes/truncate-pipe/truncate-pipe';
@@ -46,7 +46,7 @@ describe('HideoutCard', () => {
     component = fixture.componentInstance;
     componentRef = fixture.componentRef;
 
-    componentRef.setInput('hideout', mockedHideoutMetadata);
+    componentRef.setInput('hideout', mockHideoutMetadata);
 
     await fixture.whenStable();
   });
@@ -68,7 +68,7 @@ describe('HideoutCard', () => {
       });
 
       it('should have the title as text', () => {
-        expect(hideoutTitleElt.innerText).toBe(mockedHideoutMetadata.name);
+        expect(hideoutTitleElt.innerText).toBe(mockHideoutMetadata.name);
       });
 
       it("should truncate title if it's bigger than 24 characters", async () => {
@@ -80,7 +80,7 @@ describe('HideoutCard', () => {
 
         const newName = makeStrOfLen(25);
         componentRef.setInput('hideout', {
-          ...mockedHideoutMetadata,
+          ...mockHideoutMetadata,
           name: newName,
         });
 
@@ -105,7 +105,7 @@ describe('HideoutCard', () => {
       });
 
       it('should have `by {username}` as text', () => {
-        expect(authorUsernameElt.innerText).toBe(`by ${mockedHideoutMetadata.author}`);
+        expect(authorUsernameElt.innerText).toBe(`by ${mockHideoutMetadata.author}`);
       });
 
       it("should have a link to the user's profile", () => {
@@ -113,8 +113,8 @@ describe('HideoutCard', () => {
         expect(profileLinkElt).withContext('link should exist').not.toBeNull();
         expect(profileLinkElt.innerText)
           .withContext('link should be around the author username')
-          .toBe(mockedHideoutMetadata.author);
-        expect(profileLinkElt.href.endsWith(`/user/${mockedHideoutMetadata.author}`))
+          .toBe(mockHideoutMetadata.author);
+        expect(profileLinkElt.href.endsWith(`/user/${mockHideoutMetadata.author}`))
           .withContext("link should point to user's profile")
           .toBeTrue();
       });
@@ -132,7 +132,7 @@ describe('HideoutCard', () => {
       });
 
       it('should have map name as text', () => {
-        expect(mapNameElt.innerText).toBe(mockedHideoutMetadata.map.name);
+        expect(mapNameElt.innerText).toBe(mockHideoutMetadata.map.name);
       });
     });
 
@@ -149,7 +149,7 @@ describe('HideoutCard', () => {
 
       it('should have `POE {version}` as text', () => {
         const text = replaceNbspWithSpace(poeVersionElt.textContent.trim());
-        expect(text).toBe(`POE ${mockedHideoutMetadata.poeVersion}`);
+        expect(text).toBe(`POE ${mockHideoutMetadata.poeVersion}`);
       });
     });
 
@@ -179,7 +179,7 @@ describe('HideoutCard', () => {
 
         takeIconOff(ratingElt);
 
-        expect(takeWhitespaceOff(ratingElt.textContent)).toBe(`${mockedHideoutMetadata.rating}/5`);
+        expect(takeWhitespaceOff(ratingElt.textContent)).toBe(`${mockHideoutMetadata.rating}/5`);
       });
 
       it('should have star icon', () => {
@@ -206,7 +206,7 @@ describe('HideoutCard', () => {
         }
 
         componentRef.setInput('hideout', {
-          ...mockedHideoutMetadata,
+          ...mockHideoutMetadata,
           hasMTX: true,
         });
         await fixture.whenStable();
@@ -214,7 +214,7 @@ describe('HideoutCard', () => {
         expect(getMtxText()).withContext('should be Yes for hasMTX=true').toBe('MTX: Yes');
 
         componentRef.setInput('hideout', {
-          ...mockedHideoutMetadata,
+          ...mockHideoutMetadata,
           hasMTX: false,
         });
         await fixture.whenStable();
@@ -231,7 +231,7 @@ describe('HideoutCard', () => {
         mockImages = getNImages(4);
 
         componentRef.setInput('hideout', {
-          ...mockedHideoutMetadata,
+          ...mockHideoutMetadata,
           images: mockImages,
         });
 

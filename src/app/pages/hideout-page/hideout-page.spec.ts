@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ComponentRef, provideZonelessChangeDetection } from '@angular/core';
 
-import { mockedHideout } from '../../mocks/hideout';
+import { mockHideout } from '../../mocks/hideout';
 import { HideoutPage } from './hideout-page';
 
 describe('HideoutPage', () => {
@@ -19,7 +19,7 @@ describe('HideoutPage', () => {
     component = fixture.componentInstance;
     componentRef = fixture.componentRef;
 
-    componentRef.setInput('hideout', mockedHideout);
+    componentRef.setInput('hideout', mockHideout);
 
     await fixture.whenStable();
   });

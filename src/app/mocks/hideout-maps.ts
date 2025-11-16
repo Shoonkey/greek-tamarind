@@ -1,6 +1,6 @@
 import { HideoutMap } from '../models/HideoutMap';
 
-export const hideoutMaps: HideoutMap[] = [
+export const mockHideoutMaps: HideoutMap[] = [
   {
     id: '20000000-0000-0000-0000-000000000001',
     name: 'Baleful Hideout',

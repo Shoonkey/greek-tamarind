@@ -23,11 +23,11 @@ import {
   HideoutListOptions,
 } from '../../services/api-client/api-client';
 import { CustomButtonTester } from '../../test-utils/custom-button-tester.spec';
-import { mockedHideoutMetadata } from '../../mocks/hideout-metadata';
+import { mockHideoutMetadata } from '../../mocks/hideout-metadata';
 import { HideoutList } from './hideout-list';
 
 const mockedData = 'abcde'.split('').map((id) => ({
-  ...mockedHideoutMetadata,
+  ...mockHideoutMetadata,
   id,
 }));
 

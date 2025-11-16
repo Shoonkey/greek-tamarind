@@ -1,7 +1,7 @@
 import { Hideout } from '../models/Hideout';
 import { HideoutListItem, HideoutListItemProp } from '../models/HideoutListItem';
 
-import { mockedHideout } from './hideout';
+import { mockHideout } from './hideout';
 
 function getHideoutListItem(hideout: Hideout): HideoutListItem {
   const obj: any = {};
@@ -23,4 +23,4 @@ function getHideoutListItem(hideout: Hideout): HideoutListItem {
   return obj;
 }
 
-export const mockedHideoutMetadata = getHideoutListItem(mockedHideout);
+export const mockHideoutMetadata = getHideoutListItem(mockHideout);
