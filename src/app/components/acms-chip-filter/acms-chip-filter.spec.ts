@@ -6,6 +6,7 @@ import { MatChipGridHarness, MatChipInputHarness } from '@angular/material/chips
 import { MatAutocompleteHarness } from '@angular/material/autocomplete/testing';
 import { MatFormFieldHarness } from '@angular/material/form-field/testing';
 import { MatBadgeHarness } from '@angular/material/badge/testing';
+import { MatIconHarness } from '@angular/material/icon/testing';
 import { AriaDescriber } from '@angular/cdk/a11y';
 
 import {
@@ -65,6 +66,7 @@ describe('AcmsChipFilter', () => {
     chipGrid = (await harnessLoader.getHarnessOrNull(MatChipGridHarness))!;
     autocomplete = (await harnessLoader.getHarnessOrNull(MatAutocompleteHarness))!;
     chipInput = (await harnessLoader.getHarnessOrNull(MatChipInputHarness))!;
+    // console.log(component);
 
     await fixture.whenStable();
   });
@@ -86,8 +88,68 @@ describe('AcmsChipFilter', () => {
     });
 
     describe('autocomplete', () => {
+      async function getAutocompleteOptions() {
+        await autocomplete.focus();
+        return await autocomplete.getOptions();
+      }
+
+      async function expectAutocompleteOptionsToMatch() {
+        const autocompleteOptionsHarnesses = await getAutocompleteOptions();
+        const filteredItemsLabels = component.filteredItems().map((i) => i.label);
+
+        for (const optionHarness of autocompleteOptionsHarnesses) {
+          const optionLabel = await optionHarness.getText();
+          expect(filteredItemsLabels)
+            .withContext(`should contain item with label ${optionLabel}`)
+            .toContain(optionLabel);
+        }
+      }
+
       it('should exist', () => {
         expect(autocomplete).not.toBeNull();
+      });
+
+      it('should render items according to `filteredItems`', async () => {
+        // filtered items will have both the first and second items
+        component.query.set('wolf');
+        await expectAutocompleteOptionsToMatch();
+
+        // filtered items will have only first item
+        const [item1] = defaults.items;
+        componentRef.setInput('items', [item1]);
+        await expectAutocompleteOptionsToMatch();
+
+        // filtered items will be empty
+        component.query.set('anything');
+        await expectAutocompleteOptionsToMatch();
+      });
+
+      it('should render a check icon for selected options', async () => {
+        const [item1, item2] = defaults.items;
+        componentRef.setInput('value', [item1.value, item2.value]);
+        component.query.set('wolf');
+
+        const autocompleteOptionsHarnesses = await getAutocompleteOptions();
+        for (const optionHarness of autocompleteOptionsHarnesses) {
+          const iconHarness = (await optionHarness.getHarnessOrNull(MatIconHarness))!;
+          expect(iconHarness).withContext('option should contain an icon').not.toBeNull();
+          const iconName = await iconHarness.getName();
+          expect(iconName).withContext('option icon should be the check icon').toBe('check_circle');
+        }
+      });
+
+      it('should render a circle icon for unselected options', async () => {
+        const [item1, item2] = defaults.items;
+        componentRef.setInput('value', [item1.value, item2.value]);
+        component.query.set('axo');
+
+        const autocompleteOptionsHarnesses = await getAutocompleteOptions();
+        for (const optionHarness of autocompleteOptionsHarnesses) {
+          const iconHarness = (await optionHarness.getHarnessOrNull(MatIconHarness))!;
+          expect(iconHarness).withContext('option should contain an icon').not.toBeNull();
+          const iconName = await iconHarness.getName();
+          expect(iconName).withContext('option icon should be the circle icon').toBe('circle');
+        }
       });
     });
 
@@ -97,12 +159,6 @@ describe('AcmsChipFilter', () => {
       function takeAwayBadgeText(text: string) {
         return text.replace(/(\s*\+ \d+)$/, '');
       }
-
-      function getCDKDescribedByMessageContainer() {
-        return document.querySelector('.cdk-describedby-message-container')!;
-      }
-
-      function expectCDKMessage(forId: string) {}
 
       it('should exist', () => {
         expect(chipGrid).not.toBeNull();
@@ -210,26 +266,149 @@ describe('AcmsChipFilter', () => {
     });
   });
 
-  // describe('signals/functions', () => {
-  //   describe("getSelectionBadgeDescription()", () => {});
+  describe('signals/functions', () => {
+    describe('getSelectionBadgeDescription()', () => {
+      it('should properly show message for no items', () => {
+        expect(component.getSelectionBadgeDescription(0)).toBe('No other items are selected');
+      });
+      it('should properly show message for a single item', () => {
+        expect(component.getSelectionBadgeDescription(1))
+          .withContext('should properly show message for a single item')
+          .toBe('One other item is also selected');
+      });
 
-  //   describe('selectedItems()', () => {
-  //     it('should update properly when `value` (list of selected values) or `items` (list of all selectable values) change', () => {});
-  //   });
+      it('should properly show message for two or more items', () => {
+        for (let i = 2; i < 5; i++)
+          expect(component.getSelectionBadgeDescription(i))
+            .withContext(`should show proper message for ${i} items`)
+            .toBe(`${i} items are also selected`);
+      });
+    });
 
-  //   describe('filteredItems()', () => {
-  //     it('should update properly when `query` changes, with any items that contain it as a substring (case-insensitive)', () => {});
-  //   });
+    describe('selectedItems()', () => {
+      it('should be an empty list when value=null', () => {
+        componentRef.setInput('value', null);
+        expect(component.selectedItems()).toEqual([]);
+      });
 
-  //   describe('isActive()', () => {
-  //     it("should be true when there's any item is selected and false otherwise", () => {});
-  //   });
+      it('should update when `value` (list of selected values) changes', () => {
+        const [item1, item2] = defaults.items;
+        componentRef.setInput('value', [item1.value, item2.value]);
 
-  //   describe('change.emit($data)', () => {
-  //     it('should emit when a selection is made', () => {});
-  //     it('when selecting a new item, should emit with new item in the list', () => {});
-  //     it('when deselecting an item, should emit with said item removed from the list', () => {});
-  //     it('when deselecting the last item, should emit null', () => {});
-  //   });
-  // });
+        const selectedItems = component.selectedItems();
+        expect(selectedItems).toContain(item1);
+        expect(selectedItems).toContain(item2);
+      });
+
+      it('should update when `items` (list of all selectable values) change', () => {
+        const [item1, item2] = defaults.items;
+        componentRef.setInput('items', [item1]);
+        componentRef.setInput('value', [item1.value, item2.value]);
+
+        const selectedItems = component.selectedItems();
+        expect(selectedItems).toContain(item1);
+        expect(selectedItems).not.toContain(item2);
+      });
+    });
+
+    describe('isActive()', () => {
+      it("should be true when there's any item is selected and false otherwise", () => {
+        componentRef.setInput('value', null);
+        expect(component.isActive())
+          .withContext('should be inactive with no selection')
+          .toBeFalse();
+
+        const [item1, item2] = defaults.items;
+
+        componentRef.setInput('value', [item1.value]);
+        expect(component.isActive()).withContext('should be active with 1 selection').toBeTrue();
+
+        componentRef.setInput('value', [item1.value, item2.value]);
+        expect(component.isActive()).withContext('should be active with 2 selections').toBeTrue();
+      });
+    });
+
+    describe('filteredItems()', () => {
+      it('should show all items when `query` is empty', () => {
+        component.query.set('');
+        expect(component.filteredItems()).toEqual(defaults.items);
+      });
+
+      it('should contain filtered items based on `query` (case-insensitive)', () => {
+        const [item1, item2, item3] = defaults.items;
+
+        component.query.set('Gray');
+        expect(component.filteredItems())
+          .withContext(
+            '"Gray" should show first item (matches case, and is at the start of the label)',
+          )
+          .toEqual([item1]);
+
+        component.query.set('wolf');
+        expect(component.filteredItems())
+          .withContext(
+            '"wolf" should show first and second items (does not match case, is at the end of the labels)',
+          )
+          .toEqual([item1, item2]);
+
+        component.query.set('oLotL');
+        expect(component.filteredItems())
+          .withContext(
+            '"oLotL" should show third item (does not match case and is in the middle of the label)',
+          )
+          .toEqual([item3]);
+      });
+
+      it('should filter for items that are already selected as well', () => {
+        const [item1] = defaults.items;
+
+        componentRef.setInput('value', [item1.value]);
+        component.query.set('gray');
+
+        expect(component.filteredItems()).toEqual([item1]);
+      });
+    });
+
+    describe('change.emit($data)', () => {
+      let changeSpy: jasmine.Spy<jasmine.Func>;
+
+      beforeEach(() => {
+        changeSpy = jasmine.createSpy('ChangeEventSpy');
+        component.change.subscribe((value) => changeSpy(value));
+      });
+
+      it('should emit when a selection is made', async () => {
+        const [item1] = defaults.items;
+        await autocomplete.selectOption({ text: item1.label });
+        expect(changeSpy).toHaveBeenCalledOnceWith([item1.value]);
+      });
+
+      it('when selecting a new item, should emit a list with previous items and the new one', async () => {
+        const [item1, item2] = defaults.items;
+        componentRef.setInput('value', [item1.value]);
+
+        await autocomplete.selectOption({ text: item2.label });
+
+        expect(changeSpy).toHaveBeenCalledOnceWith([item1.value, item2.value]);
+      });
+
+      it('when deselecting an item, should emit with said item removed from the list', async () => {
+        const [item1, item2] = defaults.items;
+        componentRef.setInput('value', [item1.value, item2.value]);
+
+        await autocomplete.selectOption({ text: item1.label });
+
+        expect(changeSpy).toHaveBeenCalledOnceWith([item2.value]);
+      });
+
+      it('when deselecting the last item, should emit null', async () => {
+        const [item1] = defaults.items;
+        componentRef.setInput('value', [item1.value]);
+
+        await autocomplete.selectOption({ text: item1.label });
+
+        expect(changeSpy).toHaveBeenCalledOnceWith(null);
+      });
+    });
+  });
 });
