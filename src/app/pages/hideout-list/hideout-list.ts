@@ -1,5 +1,5 @@
-import { Component, computed, ElementRef, inject, OnInit, Signal, signal } from '@angular/core';
-import { finalize, forkJoin } from 'rxjs';
+import { Component, computed, ElementRef, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { finalize, forkJoin, Subscription } from 'rxjs';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatButton } from '@angular/material/button';
@@ -37,13 +37,15 @@ import { ElementResizeListener } from '../../services/element-resize-listener/el
   templateUrl: './hideout-list.html',
   styleUrl: './hideout-list.scss',
 })
-export class HideoutList implements OnInit {
+export class HideoutList implements OnInit, OnDestroy {
   loggingService = inject(LoggingService);
   apiClient = inject(ApiClient);
   dialogManager = inject(MatDialog);
   smartListManager = inject(SmartListManager);
   kbdListener = inject(KeyboardListener);
   resizeListener = inject(ElementResizeListener);
+
+  private _dialogAfterClosedSubscription?: Subscription;
 
   // how many items to retrieve per server page
   itemsPerPageRetrieved = 6;
@@ -83,6 +85,11 @@ export class HideoutList implements OnInit {
     this.loadFilters();
     this.updateLayoutFromWidth(document.body.clientWidth);
     this.smartList.triggerPageChangeFlow({ page: 1, newFlow: true });
+  }
+
+  ngOnDestroy() {
+    if (!this._dialogAfterClosedSubscription) return;
+    this._dialogAfterClosedSubscription.unsubscribe();
   }
 
   setupResizingLayout() {
@@ -151,7 +158,7 @@ export class HideoutList implements OnInit {
         },
       });
 
-    dialogRef.afterClosed().subscribe((newFilters) => {
+    this._dialogAfterClosedSubscription = dialogRef.afterClosed().subscribe((newFilters) => {
       if (!newFilters) return;
       this.filters.set(newFilters);
       this.smartList.triggerPageChangeFlow({ page: 1, newFlow: true });
