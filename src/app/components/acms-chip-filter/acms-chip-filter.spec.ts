@@ -1,4 +1,4 @@
-import { ComponentRef, provideZonelessChangeDetection } from '@angular/core';
+import { ComponentRef, OutputRefSubscription, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
@@ -371,10 +371,11 @@ describe('AcmsChipFilter', () => {
 
     describe('change.emit($data)', () => {
       let changeSpy: jasmine.Spy<jasmine.Func>;
+      let changeSubscription: OutputRefSubscription;
 
       beforeEach(() => {
         changeSpy = jasmine.createSpy('ChangeEventSpy');
-        component.change.subscribe((value) => changeSpy(value));
+        changeSubscription = component.change.subscribe((value) => changeSpy(value));
       });
 
       it('should emit when a selection is made', async () => {
@@ -408,6 +409,10 @@ describe('AcmsChipFilter', () => {
         await autocomplete.selectOption({ text: item1.label });
 
         expect(changeSpy).toHaveBeenCalledOnceWith(null);
+      });
+
+      afterEach(() => {
+        changeSubscription.unsubscribe();
       });
     });
   });
