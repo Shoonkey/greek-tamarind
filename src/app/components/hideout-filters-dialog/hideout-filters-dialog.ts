@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatInput } from '@angular/material/input';
 import { MatButton } from '@angular/material/button';
 
@@ -37,9 +37,7 @@ export interface DialogData {
 export class HideoutFiltersDialog {
   PoeVersion = PoeVersion;
 
-  dialogRef = inject(MatDialogRef<HideoutFiltersDialog, HideoutListFiltersInput>);
   data = inject<DialogData>(MAT_DIALOG_DATA);
-
   selectedFilters = signal(this.data.filters);
 
   updateFilter<T extends keyof HideoutListFiltersInput>(
