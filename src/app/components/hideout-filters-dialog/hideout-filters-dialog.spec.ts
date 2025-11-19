@@ -22,8 +22,9 @@ import { mockHideoutMaps } from '../../mocks/hideout-maps';
 import { mockHideoutTags } from '../../mocks/hideout-tags';
 import { PoeVersion } from '../../models/PoeVersion';
 import { HideoutListFiltersInput } from '../../services/api-client/api-client';
-import { DialogData, HideoutFiltersDialog } from './hideout-filters-dialog';
 import { CustomBooleanToggleTester } from '../../test-utils/custom-boolean-toggle-tester.spec';
+import { AcmsChipFilterHarness } from '../acms-chip-filter/testing/acms-chip-filter.harness';
+import { DialogData, HideoutFiltersDialog } from './hideout-filters-dialog';
 
 @Component({
   selector: 'mock-dialog-opener',
@@ -306,19 +307,153 @@ describe('HideoutFiltersDialog', () => {
     });
   });
 
-  // describe('maps ACMS chip filter', () => {
-  //   it('should exist', () => {});
-  //   it('should have proper label', () => {});
-  //   it('should pass `items` (list of all items) correctly', () => {});
-  //   it('should be bound to filters.mapIds', () => {});
-  //   it('filters.mapIds should be null in case no map is selected');
-  // });
+  describe('ACMS chip filters', () => {
+    describe('maps field', () => {
+      let acmsHarness: AcmsChipFilterHarness;
 
-  // describe('Tags ACMS chip filter', () => {
-  //   it('should exist', () => {});
-  //   it('should have proper label', () => {});
-  //   it('should pass `items` (list of all items) correctly', () => {});
-  //   it('should be bound to filters.tagIds', () => {});
-  //   it('filters.tagIds should be null in case no tag is selected', () => {});
-  // });
+      beforeEach(async () => {
+        acmsHarness = (await harnessLoader.getHarnessOrNull(
+          AcmsChipFilterHarness.with({ selector: 'app-acms-chip-filter:nth-child(1)' }),
+        ))!;
+      });
+
+      it('should exist', () => {
+        expect(acmsHarness).not.toBeNull();
+      });
+
+      it('should have proper label', async () => {
+        expect(await acmsHarness.getLabel()).toBe('Maps');
+      });
+
+      it('should pass `items` (list of all items) correctly', async () => {
+        const optionsHarnesses = await acmsHarness.getOptions();
+
+        const optionNames = [];
+        for (const optionHarness of optionsHarnesses)
+          optionNames.push(await optionHarness.getText());
+
+        expect(optionNames).toEqual(dialogData.baseData.maps.map((m) => m.name));
+      });
+
+      it('should be bound to filters.mapIds', async () => {
+        async function getSelectedOptionsNames() {
+          const optionsHarnesses = await acmsHarness.getSelectedOptions();
+
+          const selectedOptionNames = [];
+          for (const optionHarness of optionsHarnesses)
+            selectedOptionNames.push(await optionHarness.getText());
+
+          return selectedOptionNames;
+        }
+
+        const mapChoice = dialogData.baseData.maps[0];
+        dialog.selectedFilters.set({ mapIds: [mapChoice.id] });
+        expect(await getSelectedOptionsNames())
+          .withContext('should have one map option when `mapIds` contains one map ID')
+          .toEqual([mapChoice.name]);
+
+        dialog.selectedFilters.set({});
+        expect(await getSelectedOptionsNames())
+          .withContext('should have no options selected when `mapIds` is undefined')
+          .toEqual([]);
+
+        await acmsHarness.selectOption(mapChoice.name);
+        expect(Array.isArray(dialog.selectedFilters().mapIds))
+          .withContext('mapIds should be an array after a map is selected')
+          .toBeTruthy();
+        expect(dialog.selectedFilters().mapIds)
+          .withContext('mapIds should contain the map ID after a map is selected')
+          .toContain(mapChoice.id);
+
+        await acmsHarness.selectOption(mapChoice.name); // deselect
+        expect(dialog.selectedFilters().mapIds)
+          .withContext('mapIds should be undefined when no map is selected')
+          .not.toBeDefined();
+      });
+
+      it('filters.mapIds should be undefined if no map is selected', async () => {
+        expect(dialog.selectedFilters().mapIds).not.toBeDefined();
+
+        // select and deselect
+        await acmsHarness.selectOption(dialogData.baseData.maps[0].name);
+        await acmsHarness.selectOption(dialogData.baseData.maps[0].name);
+
+        expect(dialog.selectedFilters().mapIds).not.toBeDefined();
+      });
+    });
+
+    describe('tags field', () => {
+      let acmsHarness: AcmsChipFilterHarness;
+
+      beforeEach(async () => {
+        acmsHarness = (await harnessLoader.getHarnessOrNull(
+          AcmsChipFilterHarness.with({ selector: 'app-acms-chip-filter:nth-child(2)' }),
+        ))!;
+      });
+
+      it('should exist', () => {
+        expect(acmsHarness).not.toBeNull();
+      });
+
+      it('should have proper label', async () => {
+        expect(await acmsHarness.getLabel()).toBe('Tags');
+      });
+
+      it('should pass `items` (list of all items) correctly', async () => {
+        const optionsHarnesses = await acmsHarness.getOptions();
+
+        const optionNames = [];
+        for (const optionHarness of optionsHarnesses)
+          optionNames.push(await optionHarness.getText());
+
+        expect(optionNames).toEqual(dialogData.baseData.tags.map((m) => m.name));
+      });
+
+      it('should be bound to filters.tagIds', async () => {
+        async function getSelectedOptionsNames() {
+          const optionsHarnesses = await acmsHarness.getSelectedOptions();
+
+          const selectedOptionNames = [];
+          for (const optionHarness of optionsHarnesses)
+            selectedOptionNames.push(await optionHarness.getText());
+
+          return selectedOptionNames;
+        }
+
+        const tagChoice = dialogData.baseData.tags[0];
+        dialog.selectedFilters.set({ tagIds: [tagChoice.id] });
+        expect(await getSelectedOptionsNames())
+          .withContext('should have one tag option when `tagIds` contains one tag ID')
+          .toEqual([tagChoice.name]);
+
+        dialog.selectedFilters.set({});
+        expect(await getSelectedOptionsNames())
+          .withContext('should have no options selected when `tagIds` is undefined')
+          .toEqual([]);
+
+        await acmsHarness.selectOption(tagChoice.name);
+        expect(Array.isArray(dialog.selectedFilters().tagIds))
+          .withContext('tagIds should be an array after a tag is selected')
+          .toBeTruthy();
+        expect(dialog.selectedFilters().tagIds)
+          .withContext('tagIds should contain the tag ID after a tag is selected')
+          .toContain(tagChoice.id);
+
+        await acmsHarness.selectOption(tagChoice.name); // deselect
+        expect(dialog.selectedFilters().tagIds)
+          .withContext('tagIds should be undefined when no tag is selected')
+          .not.toBeDefined();
+      });
+
+      it('filters.tagIds should be undefined if no tag is selected', async () => {
+        expect(dialog.selectedFilters().tagIds).not.toBeDefined();
+
+        // select and deselect
+        await acmsHarness.selectOption(dialogData.baseData.tags[0].name);
+        await acmsHarness.selectOption(dialogData.baseData.tags[0].name);
+
+        expect(dialog.selectedFilters().tagIds).not.toBeDefined();
+      });
+    });
+  });
 });
