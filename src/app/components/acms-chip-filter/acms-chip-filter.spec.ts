@@ -66,7 +66,6 @@ describe('AcmsChipFilter', () => {
     chipGrid = (await harnessLoader.getHarnessOrNull(MatChipGridHarness))!;
     autocomplete = (await harnessLoader.getHarnessOrNull(MatAutocompleteHarness))!;
     chipInput = (await harnessLoader.getHarnessOrNull(MatChipInputHarness))!;
-    // console.log(component);
 
     await fixture.whenStable();
   });
