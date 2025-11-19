@@ -11,7 +11,7 @@ import { MatIcon } from '@angular/material/icon';
 
 // TODO(issue): Fix menu closing automatically on option selection
 
-interface ACMSOption {
+export interface ACMSOption {
   label: string;
   value: string;
 }
